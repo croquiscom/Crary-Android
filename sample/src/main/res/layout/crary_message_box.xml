@@ -8,24 +8,14 @@
         android:id="@+id/alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="alert"/>
+        android:onClick="onShowAlert"
+        android:text="Show Alert"/>
 
     <Button
         android:id="@+id/confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="confirm"/>
-
-    <Button
-        android:id="@+id/confirmOkCancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="confirmOkCancel"/>
-
-    <Button
-        android:id="@+id/confirmYesNo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="confirmYesNo"/>
+        android:onClick="onShowConfirm"
+        android:text="Show Confirm"/>
 
 </LinearLayout>
