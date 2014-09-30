@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.croquis.crary</groupId>
+  <artifactId>crary</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>aar</packaging>
+  <name>crary</name>
+  <description>Croquis's common libraries for Android</description>
+  <url>https://github.com/croquiscom/Crary-Android</url>
+  <licenses>
+    <license>
+      <name>Crary is available under the MIT license. See the LICENSE file for more info.</name>
+      <url>http://rem.mit-license.org/</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>yamigo</id>
+      <name>Chudong Yeo</name>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git@github.com/croquiscom/Crary-Android</connection>
+    <developerConnection>scm:git@github.com/croquiscom/Crary-Android</developerConnection>
+    <url>https://github.com/croquiscom/Crary-Android</url>
+  </scm>
+</project>
