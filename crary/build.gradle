@@ -1,7 +1,28 @@
+ext.VERSION_NAME="0.1.0-SNAPSHOT"
+ext.VERSION_CODE="00010000"
+ext.GROUP="com.croquis.crary"
+
+ext.POM_DESCRIPTION="Croquis's common libraries for Android"
+ext.POM_URL="https://github.com/croquiscom/Crary-Android"
+ext.POM_SCM_URL="https://github.com/croquiscom/Crary-Android"
+ext.POM_SCM_CONNECTION="scm:git@github.com/croquiscom/Crary-Android"
+ext.POM_SCM_DEV_CONNECTION="scm:git@github.com/croquiscom/Crary-Android"
+ext.POM_LICENCE_NAME="Crary is available under the MIT license. See the LICENSE file for more info."
+ext.POM_LICENCE_URL="http://rem.mit-license.org/"
+ext.POM_LICENCE_DIST="repo"
+ext.POM_DEVELOPER_ID="yamigo"
+ext.POM_DEVELOPER_NAME="Chudong Yeo"
+
+ext.ANDROID_BUILD_TARGET_SDK_VERSION="19"
+ext.ANDROID_BUILD_TOOLS_VERSION="19.1.0"
+ext.ANDROID_BUILD_SDK_VERSION="9"
+
+ext.RELEASE_REPOSITORY_URL="file://" + rootDir + "/deploy/releases"
+ext.SNAPSHOT_REPOSITORY_URL="file://" + rootDir + "/deploy/snapshots"
+
 ext.POM_NAME="crary"
 ext.POM_ARTIFACT_ID="crary"
 ext.POM_PACKAGING="aar"
-
 
 apply plugin: 'com.android.library'
 apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
