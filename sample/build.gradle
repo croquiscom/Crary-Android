@@ -19,19 +19,10 @@ android {
     }
 }
 
-repositories {
-    maven {
-        url "$rootDir/deploy/releases"
-    }
-    maven {
-        url "$rootDir/deploy/snapshots"
-    }
-}
-
 println "$rootDir/deploy/snashots"
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(":crary")
     compile 'com.android.support:appcompat-v7:20.0.0'
-    compile 'com.croquis.crary:crary:0.1.0-SNAPSHOT@aar'
 }
