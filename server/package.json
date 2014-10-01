@@ -1,0 +1,6 @@
+{
+  "name": "CraryTestServer",
+  "dependencies": {
+    "crary": "git+https://github.com/croquiscom/Crary-Node.git"
+  }
+}
