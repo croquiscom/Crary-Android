@@ -1,19 +1,12 @@
 package com.croquis.crary.RestClient;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 
 import com.croquis.crary.OnTaskComplete;
 
 import org.apache.http.entity.mime.MultipartEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 public class CraryRestClient {
 	public static class RestError extends Throwable {
@@ -101,43 +94,5 @@ public class CraryRestClient {
 
 	public void delete(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
 		mImplApache.delete(getBaseUrl() + path, parameters, complete, JSONObject.class);
-	}
-
-	public static void getBitmap(String url, OnRequestComplete<Bitmap> callback) {
-		new GetBitmapAsync(callback).execute(url);
-	}
-
-	private static class GetBitmapAsync extends AsyncTask<String, Void, Bitmap> {
-		private final OnRequestComplete<Bitmap> mCallback;
-
-		public GetBitmapAsync(OnRequestComplete<Bitmap> callback) {
-			mCallback = callback;
-		}
-
-		@Override
-		protected Bitmap doInBackground(String... params) {
-			String url = params[0];
-			try {
-				URL streamURL = new URL(url);
-				URLConnection urlConnection = streamURL.openConnection();
-				urlConnection.connect();
-				InputStream is = urlConnection.getInputStream();
-				Bitmap bitmap = BitmapFactory.decodeStream(is);
-				is.close();
-				return bitmap;
-			} catch (Exception e) {
-				return null;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			super.onPostExecute(result);
-			if (result == null) {
-				mCallback.onComplete(new RestError("", ""), null);
-			} else {
-				mCallback.onComplete(null, result);
-			}
-		}
 	}
 }
