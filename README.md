@@ -27,6 +27,11 @@
     compile 'com.croquis.crary:crary:0.1.0@aar'
 ```
 
+## Build
+```
+    gradle clean build uploadArchives
+```
+
 ## Author
 
 * yamigo, yamigo1021@gmail.com
