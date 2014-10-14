@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.croquis.crary.OnTaskComplete;
 
-import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.HttpEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -76,8 +76,8 @@ public class CraryRestClient {
 		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, JSONObject.class);
 	}
 
-	public void post(String path, MultipartEntity multipartEntity, OnRequestComplete<JSONObject> complete) {
-		mImplApache.post(getBaseUrl() + path, multipartEntity, complete, JSONObject.class);
+	public void post(String path, HttpEntity httpEntity, OnRequestComplete<JSONObject> complete) {
+		mImplApache.post(getBaseUrl() + path, httpEntity, complete, JSONObject.class);
 	}
 
 	public void postList(String path, JSONObject parameters, OnRequestComplete<JSONArray> complete) {
@@ -88,8 +88,8 @@ public class CraryRestClient {
 		mImplApache.put(getBaseUrl() + path, parameters, complete, JSONObject.class);
 	}
 
-	public void put(String path, MultipartEntity multipartEntity, OnRequestComplete<JSONObject> complete) {
-		mImplApache.put(getBaseUrl() + path, multipartEntity, complete, JSONObject.class);
+	public void put(String path, HttpEntity httpEntity, OnRequestComplete<JSONObject> complete) {
+		mImplApache.put(getBaseUrl() + path, httpEntity, complete, JSONObject.class);
 	}
 
 	public void delete(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
