@@ -1,4 +1,4 @@
-package com.croquis.crary.RestClient;
+package com.croquis.crary.restclient;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,9 +7,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.croquis.crary.RestClient.CraryRestClient.OnRequestComplete;
-import com.croquis.crary.RestClient.CraryRestClient.RestError;
-import com.croquis.crary.Util.JSONHelper;
+import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
+import com.croquis.crary.restclient.CraryRestClient.RestError;
+import com.croquis.crary.util.JSONHelper;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

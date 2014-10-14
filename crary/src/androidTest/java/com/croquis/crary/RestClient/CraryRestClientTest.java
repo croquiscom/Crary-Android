@@ -1,10 +1,10 @@
-package com.croquis.crary.RestClient;
+package com.croquis.crary.restclient;
 
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 
-import com.croquis.crary.RestClient.CraryRestClient.OnRequestComplete;
-import com.croquis.crary.RestClient.CraryRestClient.RestError;
+import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
+import com.croquis.crary.restclient.CraryRestClient.RestError;
 
 import org.json.JSONException;
 import org.json.JSONObject;

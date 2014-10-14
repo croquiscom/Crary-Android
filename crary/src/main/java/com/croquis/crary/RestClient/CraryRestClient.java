@@ -1,4 +1,4 @@
-package com.croquis.crary.RestClient;
+package com.croquis.crary.restclient;
 
 import android.content.Context;
 

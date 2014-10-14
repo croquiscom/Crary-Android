@@ -1,4 +1,4 @@
-package com.croquis.crary.Util;
+package com.croquis.crary.util;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
