@@ -5,17 +5,21 @@
               android:orientation="vertical">
 
     <Button
-        android:id="@+id/alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onShowAlert"
         android:text="Show Alert"/>
 
     <Button
-        android:id="@+id/confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onShowConfirm"
         android:text="Show Confirm"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onShowProgress"
+        android:text="Show Progress"/>
 
 </LinearLayout>

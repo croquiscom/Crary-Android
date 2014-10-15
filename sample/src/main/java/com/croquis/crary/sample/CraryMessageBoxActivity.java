@@ -1,6 +1,7 @@
 package com.croquis.crary.sample;
 
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +14,8 @@ public class CraryMessageBoxActivity extends ActionBarActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.crary_message_box);
+
+		setTitle("CraryMessageBox");
 	}
 
 	public void onShowAlert(View view) {
@@ -31,5 +34,10 @@ public class CraryMessageBoxActivity extends ActionBarActivity{
 				CraryMessageBox.alert(CraryMessageBoxActivity.this, which == DialogInterface.BUTTON_POSITIVE ? "You confirmed" : "You cancelled");
 			}
 		});
+	}
+
+	public void onShowProgress(View view) {
+		ProgressDialog progressDialog = CraryMessageBox.progress(this);
+		progressDialog.setCancelable(true);
 	}
 }

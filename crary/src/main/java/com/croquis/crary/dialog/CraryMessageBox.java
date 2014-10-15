@@ -1,6 +1,7 @@
 package com.croquis.crary.dialog;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -70,6 +71,17 @@ public class CraryMessageBox {
 
 	public static void confirmYesNo(Context context, String message, String title, OnClickListener done) {
 		confirm(context, message, title, context.getString(R.string.Yes), context.getString(R.string.No), done);
+	}
+
+	public static ProgressDialog progress(Context context) {
+		return progress(context, context.getString(R.string.Wait));
+	}
+	public static ProgressDialog progress(Context context, String message) {
+		ProgressDialog progressDialog = new ProgressDialog(context);
+		progressDialog.setMessage(message);
+		progressDialog.setCancelable(false);
+		progressDialog.show();
+		return progressDialog;
 	}
 
 	private static String getAppName(Context context) {
