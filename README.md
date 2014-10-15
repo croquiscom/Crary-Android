@@ -9,10 +9,10 @@
 ``` groovy
     repositories {
         maven {
-            url 'https://raw.github.com/croquiscom/Crary-Android/master/deploy/releases'
+            url 'https://github.com/croquiscom/Crary-Android/raw/master/deploy/releases'
         }
         maven {
-            url 'https://raw.github.com/croquiscom/Crary-Android/master/deploy/snapshots'
+            url 'https://github.com/croquiscom/Crary-Android/raw/master/deploy/snapshots'
         }
     }
 ```
