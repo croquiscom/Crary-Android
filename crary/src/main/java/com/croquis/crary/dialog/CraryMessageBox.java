@@ -84,6 +84,19 @@ public class CraryMessageBox {
 		return progressDialog;
 	}
 
+	public static void selectItem(Context context, String[] items, OnClickListener listener) {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+		dialogBuilder.setTitle(getAppName(context));
+		dialogBuilder.setItems(items, listener);
+		dialogBuilder.setNegativeButton(android.R.string.cancel, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		dialogBuilder.show();
+	}
+
 	private static String getAppName(Context context) {
 		String packageName = context.getPackageName();
 		int resId = context.getResources().getIdentifier("app_name", "string", packageName);

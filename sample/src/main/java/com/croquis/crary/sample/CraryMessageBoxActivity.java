@@ -40,4 +40,15 @@ public class CraryMessageBoxActivity extends ActionBarActivity{
 		ProgressDialog progressDialog = CraryMessageBox.progress(this);
 		progressDialog.setCancelable(true);
 	}
+
+	public void onShowSelectItem(View view) {
+		final String[] items = {"foo", "bar", "baz"};
+
+		CraryMessageBox.selectItem(this, items, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int which) {
+				CraryMessageBox.alert(CraryMessageBoxActivity.this, items[which]);
+			}
+		});
+	}
 }

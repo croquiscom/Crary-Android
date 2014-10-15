@@ -22,4 +22,10 @@
         android:onClick="onShowProgress"
         android:text="Show Progress"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onShowSelectItem"
+        android:text="Show SelectItem"/>
+
 </LinearLayout>
