@@ -42,3 +42,9 @@ android {
 dependencies {
     compile 'org.apache.httpcomponents:httpmime:4.3.+';
 }
+
+task cleanDeployDir(type: Delete) {
+    delete fileTree(dir: "../deploy/snapshots");
+}
+
+uploadArchives.dependsOn cleanDeployDir
