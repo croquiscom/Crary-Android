@@ -27,4 +27,12 @@
     <developerConnection>scm:git@github.com/croquiscom/Crary-Android</developerConnection>
     <url>https://github.com/croquiscom/Crary-Android</url>
   </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
+      <version>4.3.+</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>
