@@ -41,6 +41,22 @@ public class CraryMessageBox {
 		dialogBuilder.show();
 	}
 
+	public static void alert(Context context, int messageId) {
+		alert(context, context.getString(messageId));
+	}
+
+	public static void alert(Context context, int messageId, OnClickListener done) {
+		alert(context, context.getString(messageId), done);
+	}
+
+	public static void alert(Context context, int messageId, int titleId) {
+		alert(context, context.getString(messageId), context.getString(titleId));
+	}
+
+	public static void alert(Context context, int messageId, int titleId, OnClickListener done) {
+		alert(context, context.getString(messageId), context.getString(titleId), done);
+	}
+
 	public static void confirm(Context context, String message, String yes, String no, OnClickListener done) {
 		String title = getAppName(context);
 		confirm(context, message, title, yes, no, done);
@@ -65,8 +81,16 @@ public class CraryMessageBox {
 		confirm(context, message, title, context.getString(R.string.OK), context.getString(R.string.Cancel), done);
 	}
 
+	public static void confirmOkCancel(Context context, int messageId, OnClickListener done) {
+		confirmOkCancel(context, context.getString(messageId), done);
+	}
+
 	public static void confirmYesNo(Context context, String message, OnClickListener done) {
 		confirm(context, message, context.getString(R.string.Yes), context.getString(R.string.No), done);
+	}
+
+	public static void confirmYesNo(Context context, int messageId, OnClickListener done) {
+		confirmYesNo(context, messageId, done);
 	}
 
 	public static void confirmYesNo(Context context, String message, String title, OnClickListener done) {
@@ -82,6 +106,10 @@ public class CraryMessageBox {
 		progressDialog.setCancelable(false);
 		progressDialog.show();
 		return progressDialog;
+	}
+
+	public static void selectItem(Context context, int itemsId, OnClickListener listener) {
+		selectItem(context, context.getResources().getStringArray(itemsId), listener);
 	}
 
 	public static void selectItem(Context context, String[] items, OnClickListener listener) {
