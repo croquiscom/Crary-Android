@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
 import com.croquis.crary.R;
+import com.croquis.crary.util.DialogUtils;
 
 public class CraryMessageBox {
 	public static void alert(Context context, String message) {
@@ -18,7 +19,7 @@ public class CraryMessageBox {
 	}
 
 	public static void alert(Context context, String message, OnClickListener done) {
-		alert(context, message, getAppName(context), done);
+		alert(context, message, DialogUtils.getAppName(context), done);
 	}
 
 	public static void alert(Context context, String message, String title) {
@@ -57,7 +58,7 @@ public class CraryMessageBox {
 	}
 
 	public static void confirm(Context context, String message, String yes, String no, OnClickListener done) {
-		String title = getAppName(context);
+		String title = DialogUtils.getAppName(context);
 		confirm(context, message, title, yes, no, done);
 	}
 
@@ -94,28 +95,5 @@ public class CraryMessageBox {
 
 	public static void confirmYesNo(Context context, String message, String title, OnClickListener done) {
 		confirm(context, message, title, context.getString(R.string.Yes), context.getString(R.string.No), done);
-	}
-
-	public static void selectItem(Context context, int itemsId, OnClickListener listener) {
-		selectItem(context, context.getResources().getStringArray(itemsId), listener);
-	}
-
-	public static void selectItem(Context context, String[] items, OnClickListener listener) {
-		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-		dialogBuilder.setTitle(getAppName(context));
-		dialogBuilder.setItems(items, listener);
-		dialogBuilder.setNegativeButton(android.R.string.cancel, new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
-		dialogBuilder.show();
-	}
-
-	private static String getAppName(Context context) {
-		String packageName = context.getPackageName();
-		int resId = context.getResources().getIdentifier("app_name", "string", packageName);
-		return resId == 0 ? "" : context.getString(resId);
 	}
 }

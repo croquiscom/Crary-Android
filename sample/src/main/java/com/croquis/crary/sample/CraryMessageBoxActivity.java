@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
+import com.croquis.crary.dialog.CraryInputDialog;
 import com.croquis.crary.dialog.CraryMessageBox;
 import com.croquis.crary.dialog.ProgressDialogHelper;
 
@@ -45,7 +46,7 @@ public class CraryMessageBoxActivity extends ActionBarActivity{
 	public void onShowSelectItem(View view) {
 		final String[] items = {"foo", "bar", "baz"};
 
-		CraryMessageBox.selectItem(this, items, new DialogInterface.OnClickListener() {
+		CraryInputDialog.selectSingle(this, items, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int which) {
 				CraryMessageBox.alert(CraryMessageBoxActivity.this, items[which]);

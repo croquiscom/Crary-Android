@@ -26,6 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onShowSelectItem"
-        android:text="Show SelectItem"/>
+        android:text="Show Select Single"/>
 
 </LinearLayout>
