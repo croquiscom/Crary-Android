@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
 import com.croquis.crary.dialog.CraryMessageBox;
+import com.croquis.crary.dialog.ProgressDialogHelper;
 
 public class CraryMessageBoxActivity extends ActionBarActivity{
 	@Override
@@ -37,7 +38,7 @@ public class CraryMessageBoxActivity extends ActionBarActivity{
 	}
 
 	public void onShowProgress(View view) {
-		ProgressDialog progressDialog = CraryMessageBox.progress(this);
+		ProgressDialog progressDialog = ProgressDialogHelper.show(this);
 		progressDialog.setCancelable(true);
 	}
 
