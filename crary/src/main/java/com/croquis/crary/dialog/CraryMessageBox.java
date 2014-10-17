@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
 import com.croquis.crary.R;
-import com.croquis.crary.util.DialogUtils;
 
 public class CraryMessageBox {
 	public static void alert(Context context, String message) {
@@ -19,7 +18,7 @@ public class CraryMessageBox {
 	}
 
 	public static void alert(Context context, String message, OnClickListener done) {
-		alert(context, message, DialogUtils.getAppName(context), done);
+		alert(context, message, Utils.getAppName(context), done);
 	}
 
 	public static void alert(Context context, String message, String title) {
@@ -58,7 +57,7 @@ public class CraryMessageBox {
 	}
 
 	public static void confirm(Context context, String message, String yes, String no, OnClickListener done) {
-		String title = DialogUtils.getAppName(context);
+		String title = Utils.getAppName(context);
 		confirm(context, message, title, yes, no, done);
 	}
 
