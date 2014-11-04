@@ -11,20 +11,20 @@ import com.croquis.crary.dialog.CraryInputDialog;
 import com.croquis.crary.dialog.CraryMessageBox;
 import com.croquis.crary.dialog.ProgressDialogHelper;
 
-public class CraryMessageBoxActivity extends ActionBarActivity{
+public class DialogActivity extends ActionBarActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.crary_message_box);
+		setContentView(R.layout.dialog);
 
-		setTitle("CraryMessageBox");
+		setTitle("Crary/Dialog");
 	}
 
 	public void onShowAlert(View view) {
 		CraryMessageBox.alert(this, "message", "title", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int which) {
-				CraryMessageBox.alert(CraryMessageBoxActivity.this, "done");
+				CraryMessageBox.alert(DialogActivity.this, "done");
 			}
 		});
 	}
@@ -33,7 +33,7 @@ public class CraryMessageBoxActivity extends ActionBarActivity{
 		CraryMessageBox.confirmYesNo(this, "Really?", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int which) {
-				CraryMessageBox.alert(CraryMessageBoxActivity.this, which == DialogInterface.BUTTON_POSITIVE ? "You confirmed" : "You cancelled");
+				CraryMessageBox.alert(DialogActivity.this, which == DialogInterface.BUTTON_POSITIVE ? "You confirmed" : "You cancelled");
 			}
 		});
 	}
@@ -49,7 +49,7 @@ public class CraryMessageBoxActivity extends ActionBarActivity{
 		CraryInputDialog.selectSingle(this, items, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int which) {
-				CraryMessageBox.alert(CraryMessageBoxActivity.this, items[which]);
+				CraryMessageBox.alert(DialogActivity.this, items[which]);
 			}
 		});
 	}

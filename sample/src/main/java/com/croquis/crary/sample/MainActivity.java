@@ -17,7 +17,7 @@ public class MainActivity extends ActionBarActivity{
 		setContentView(R.layout.main);
 
 		ArrayList<String> titleList = new ArrayList<String>();
-		titleList.add("CraryMessageBox");
+		titleList.add("Dialog");
 
 		ListView listView = (ListView)findViewById(R.id.listView);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titleList);
@@ -26,7 +26,7 @@ public class MainActivity extends ActionBarActivity{
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				if (i == 0) {
-					Intent intent = new Intent(MainActivity.this, CraryMessageBoxActivity.class);
+					Intent intent = new Intent(MainActivity.this, DialogActivity.class);
 					startActivity(intent);
 				}
 			}
