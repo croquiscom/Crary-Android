@@ -9,6 +9,7 @@ public class ProgressDialogHelper {
 	public static ProgressDialog show(Context context) {
 		return show(context, context.getString(R.string.Wait));
 	}
+
 	public static ProgressDialog show(Context context, String message) {
 		ProgressDialog progressDialog = new ProgressDialog(context);
 		progressDialog.setMessage(message);

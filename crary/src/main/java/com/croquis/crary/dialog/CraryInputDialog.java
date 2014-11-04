@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 
 public class CraryInputDialog {
-	public static void selectSingle(Context context, int itemsId, DialogInterface.OnClickListener listener) {
-		selectSingle(context, context.getResources().getStringArray(itemsId), listener);
+	public static void selectSingle(Context context, int itemIds, DialogInterface.OnClickListener listener) {
+		selectSingle(context, context.getResources().getStringArray(itemIds), listener);
 	}
 
 	public static void selectSingle(Context context, String[] items, DialogInterface.OnClickListener listener) {
