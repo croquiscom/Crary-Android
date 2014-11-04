@@ -3,6 +3,7 @@ package com.croquis.crary.restclient;
 import android.content.Context;
 
 import com.croquis.crary.OnTaskComplete;
+import com.google.gson.JsonObject;
 
 import org.apache.http.HttpEntity;
 import org.json.JSONArray;
@@ -94,5 +95,17 @@ public class CraryRestClient {
 
 	public void delete(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
 		mImplApache.delete(getBaseUrl() + path, parameters, complete, JSONObject.class);
+	}
+
+	public <T> void get(String path, JsonObject parameters, Class<T> c, OnRequestComplete<T> complete) {
+		mImplApache.get(getBaseUrl() + path, parameters, complete, c);
+	}
+
+	public <T> void post(String path, JsonObject parameters, Class<T> c, OnRequestComplete<T> complete) {
+		mImplApache.post(getBaseUrl() + path, parameters, complete, c);
+	}
+
+	public <T> void postGzip(String path, JsonObject parameters, Class<T> c, OnRequestComplete<T> complete) {
+		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, c);
 	}
 }

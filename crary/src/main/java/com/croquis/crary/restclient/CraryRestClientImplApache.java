@@ -10,6 +10,9 @@ import android.os.Looper;
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
 import com.croquis.crary.util.JSONHelper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -53,6 +56,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -68,11 +72,13 @@ public class CraryRestClientImplApache {
 	Context mContext;
 	HttpClient mClient;
 	String mSessionId;
+	Gson mGson;
 
 	Handler mHandler = new Handler(Looper.getMainLooper());
 
 	public CraryRestClientImplApache(Context context) {
 		mContext = context;
+		mGson = new Gson();
 		createClient();
 		setUserAgent(mContext, mClient);
 		loadSessionId();
@@ -153,6 +159,18 @@ public class CraryRestClientImplApache {
 		request(new HttpDelete(url + convertJSONtoQuery(json)), complete, c, true);
 	}
 
+	public <T> void get(String url, JsonObject json, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpGet(url + convertJSONtoQuery(json)), complete, c, true);
+	}
+
+	public <T> void post(String url, JsonObject json, OnRequestComplete<T> complete, Class<T> c) {
+		post(url, convertJSONtoEntity(json), complete, c);
+	}
+
+	public <T> void postGzip(String url, JsonObject json, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpPost(url), convertJSONtoGzipEntity(json), complete, c, true);
+	}
+
 	private <T> void request(HttpEntityEnclosingRequestBase request, HttpEntity entity,
 							 CraryRestClient.OnRequestComplete<T> complete, Class<T> c, boolean useCookie) {
 		if (entity != null) {
@@ -209,6 +227,22 @@ public class CraryRestClientImplApache {
 		return sb.toString().replace(' ', '+');
 	}
 
+	private String convertJSONtoQuery(JsonObject json) {
+		if (json == null) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("?");
+		for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+			JsonElement value = entry.getValue();
+			if (value.isJsonPrimitive()) {
+				sb.append(entry.getKey()).append("=").append(value.getAsString()).append("&");
+			}
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		return sb.toString().replace(' ', '+');
+	}
+
 	private HttpEntity convertJSONtoEntity(JSONObject json) {
 		StringEntity entity = null;
 		if (json != null) {
@@ -221,8 +255,27 @@ public class CraryRestClientImplApache {
 		return entity;
 	}
 
+	private HttpEntity convertJSONtoEntity(JsonObject json) {
+		StringEntity entity = null;
+		if (json != null) {
+			try {
+				entity = new StringEntity(mGson.toJson(json), HTTP.UTF_8);
+				entity.setContentType("application/json");
+			} catch (UnsupportedEncodingException e) {
+			}
+		}
+		return entity;
+	}
+
 	private HttpEntity convertJSONtoGzipEntity(JSONObject json) {
 		ByteArrayEntity entity = new ByteArrayEntity(gzipDeflate(json.toString().getBytes()));
+		entity.setContentEncoding("gzip");
+		entity.setContentType("application/json");
+		return entity;
+	}
+
+	private HttpEntity convertJSONtoGzipEntity(JsonObject json) {
+		ByteArrayEntity entity = new ByteArrayEntity(gzipDeflate(mGson.toJson(json).getBytes()));
 		entity.setContentEncoding("gzip");
 		entity.setContentType("application/json");
 		return entity;
@@ -245,15 +298,22 @@ public class CraryRestClientImplApache {
 		}
 
 		T json = null;
-		try {
-			if (c == JSONObject.class) {
+		if (c == JSONObject.class) {
+			try {
 				json = (T) new JSONObject(result);
-			} else if (c == JSONArray.class) {
-				json = (T) new JSONArray(result);
+			} catch (JSONException e) {
+				callOnComplete(complete, RestError.UNRECOGNIZABLE_RESULT, null);
+				return;
 			}
-		} catch (JSONException e) {
-			callOnComplete(complete, RestError.UNRECOGNIZABLE_RESULT, null);
-			return;
+		} else if (c == JSONArray.class) {
+			try {
+				json = (T) new JSONArray(result);
+			} catch (JSONException e) {
+				callOnComplete(complete, RestError.UNRECOGNIZABLE_RESULT, null);
+				return;
+			}
+		} else {
+			json = mGson.fromJson(result, c);
 		}
 		RestError error = getResponseError(response, json);
 		if (error != null) {
