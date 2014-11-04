@@ -21,7 +21,7 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		mBaseUrl = "http://192.168.23.7:3000/";
 	}
 
-	private static class EchoResult {
+	private static class PingResult {
 		String response;
 	}
 
@@ -35,9 +35,9 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
-		restClient.get("echo", null, EchoResult.class, new OnRequestComplete<EchoResult>() {
+		restClient.get("ping", null, PingResult.class, new OnRequestComplete<PingResult>() {
 			@Override
-			public void onComplete(RestError error, EchoResult result) {
+			public void onComplete(RestError error, PingResult result) {
 				assertNull(error);
 				assertNull(result.response);
 				countDownLatch.countDown();
@@ -55,9 +55,9 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		restClient.setBaseUrl(mBaseUrl);
 		JsonObject parameters = new JsonObject();
 		parameters.add("message", new JsonPrimitive("hello"));
-		restClient.get("echo", parameters, EchoResult.class, new OnRequestComplete<EchoResult>() {
+		restClient.get("ping", parameters, PingResult.class, new OnRequestComplete<PingResult>() {
 			@Override
-			public void onComplete(RestError error, EchoResult result) {
+			public void onComplete(RestError error, PingResult result) {
 				assertNull(error);
 				assertEquals("hello", result.response);
 				countDownLatch.countDown();
@@ -73,9 +73,9 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
-		restClient.post("echo", null, EchoResult.class, new OnRequestComplete<EchoResult>() {
+		restClient.post("ping", null, PingResult.class, new OnRequestComplete<PingResult>() {
 			@Override
-			public void onComplete(RestError error, EchoResult result) {
+			public void onComplete(RestError error, PingResult result) {
 				assertNull(error);
 				assertNull(result.response);
 				countDownLatch.countDown();
@@ -93,9 +93,9 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		restClient.setBaseUrl(mBaseUrl);
 		JsonObject parameters = new JsonObject();
 		parameters.add("message", new JsonPrimitive("hello"));
-		restClient.post("echo", parameters, EchoResult.class, new OnRequestComplete<EchoResult>() {
+		restClient.post("ping", parameters, PingResult.class, new OnRequestComplete<PingResult>() {
 			@Override
-			public void onComplete(RestError error, EchoResult result) {
+			public void onComplete(RestError error, PingResult result) {
 				assertNull(error);
 				assertEquals("hello", result.response);
 				countDownLatch.countDown();
@@ -111,13 +111,13 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 
 		final CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
-		final JsonObject parameters = new JsonObject();
+		JsonObject parameters = new JsonObject();
 		parameters.add("data", new JsonPrimitive("croquis"));
 		restClient.post("setData", parameters, DataResult.class, new OnRequestComplete<DataResult>() {
 			@Override
 			public void onComplete(RestError error, DataResult result) {
 				restClient.setBaseUrl(mBaseUrl);
-				restClient.get("getData", parameters, DataResult.class, new OnRequestComplete<DataResult>() {
+				restClient.get("getData", null, DataResult.class, new OnRequestComplete<DataResult>() {
 					@Override
 					public void onComplete(RestError error, DataResult result) {
 						assertNull(error);
@@ -139,9 +139,9 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		restClient.setBaseUrl(mBaseUrl);
 		JsonObject parameters = new JsonObject();
 		parameters.add("message", new JsonPrimitive("hello"));
-		restClient.postGzip("echo", parameters, EchoResult.class, new OnRequestComplete<EchoResult>() {
+		restClient.postGzip("ping", parameters, PingResult.class, new OnRequestComplete<PingResult>() {
 			@Override
-			public void onComplete(RestError error, EchoResult result) {
+			public void onComplete(RestError error, PingResult result) {
 				assertNull(error);
 				assertEquals("hello", result.response);
 				countDownLatch.countDown();

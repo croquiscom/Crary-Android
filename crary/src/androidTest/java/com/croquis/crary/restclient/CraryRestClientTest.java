@@ -28,7 +28,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
-		restClient.get("echo", null, new OnRequestComplete<JSONObject>() {
+		restClient.get("ping", null, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
 				assertNull(error);
@@ -48,7 +48,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		restClient.setBaseUrl(mBaseUrl);
 		JSONObject parameters = new JSONObject();
 		parameters.put("message", "hello");
-		restClient.get("echo", parameters, new OnRequestComplete<JSONObject>() {
+		restClient.get("ping", parameters, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
 				assertNull(error);
@@ -67,7 +67,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
-		restClient.post("echo", (JSONObject) null, new OnRequestComplete<JSONObject>() {
+		restClient.post("ping", (JSONObject) null, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
 				assertNull(error);
@@ -87,7 +87,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		restClient.setBaseUrl(mBaseUrl);
 		JSONObject parameters = new JSONObject();
 		parameters.put("message", "hello");
-		restClient.post("echo", parameters, new OnRequestComplete<JSONObject>() {
+		restClient.post("ping", parameters, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
 				assertNull(error);
@@ -106,13 +106,13 @@ public class CraryRestClientTest extends AndroidTestCase {
 
 		final CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
-		final JSONObject parameters = new JSONObject();
+		JSONObject parameters = new JSONObject();
 		parameters.put("data", "croquis");
 		restClient.post("setData", parameters, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
 				restClient.setBaseUrl(mBaseUrl);
-				restClient.get("getData", parameters, new OnRequestComplete<JSONObject>() {
+				restClient.get("getData", null, new OnRequestComplete<JSONObject>() {
 					@Override
 					public void onComplete(RestError error, JSONObject result) {
 						assertNull(error);
@@ -135,7 +135,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		restClient.setBaseUrl(mBaseUrl);
 		JSONObject parameters = new JSONObject();
 		parameters.put("message", "hello");
-		restClient.postGzip("echo", parameters, new OnRequestComplete<JSONObject>() {
+		restClient.postGzip("ping", parameters, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
 				assertNull(error);

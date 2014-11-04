@@ -1,10 +1,10 @@
 crary = require 'crary'
 
 setupRouter = (router) ->
-  router.get '/echo', (req, res) ->
+  router.get '/ping', (req, res) ->
     res.sendResult response: req.query.message
 
-  router.post '/echo', (req, res) ->
+  router.post '/ping', (req, res) ->
     res.sendResult response: req.body.message
 
   router.post '/setData', (req, res) ->
