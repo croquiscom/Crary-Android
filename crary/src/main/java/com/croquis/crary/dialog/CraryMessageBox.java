@@ -89,7 +89,7 @@ public class CraryMessageBox {
 	}
 
 	public static void confirmYesNo(Context context, int messageId, OnClickListener done) {
-		confirmYesNo(context, messageId, done);
+		confirmYesNo(context, context.getString(messageId), done);
 	}
 
 	public static void confirmYesNo(Context context, String message, String title, OnClickListener done) {
