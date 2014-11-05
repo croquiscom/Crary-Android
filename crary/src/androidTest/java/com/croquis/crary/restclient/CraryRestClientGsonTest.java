@@ -58,6 +58,12 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		}
 	}
 
+	private static class UnderlineConvertResult {
+		int userId;
+		String fullName;
+		String phoneNumber;
+	}
+
 	@LargeTest
 	public void testGet() throws InterruptedException {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -252,6 +258,32 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 				assertEquals("message", data.get(0).getAsString());
 				assertEquals(5, data.get(1).getAsInt());
 				assertEquals(true, data.get(2).getAsBoolean());
+				countDownLatch.countDown();
+			}
+		});
+
+		countDownLatch.await();
+	}
+
+	@LargeTest
+	public void testUnderlineConvert() throws InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(mBaseUrl);
+
+		JsonObject parameters = new JsonObject();
+		parameters.addProperty("user_id", 123);
+		parameters.addProperty("full_name", "Crary");
+		parameters.addProperty("phone_number", "1-234-5678");
+		restClient.post("echo", parameters, UnderlineConvertResult.class, new OnRequestComplete<UnderlineConvertResult>() {
+			@Override
+			public void onComplete(RestError error, UnderlineConvertResult result) {
+				assertNull(error);
+				assertNotNull(result);
+				assertEquals(123, result.userId);
+				assertEquals("Crary", result.fullName);
+				assertEquals("1-234-5678", result.phoneNumber);
 				countDownLatch.countDown();
 			}
 		});

@@ -10,7 +10,9 @@ import android.os.Looper;
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
 import com.croquis.crary.util.JSONHelper;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -80,7 +82,7 @@ public class CraryRestClientImplApache {
 
 	public CraryRestClientImplApache(Context context) {
 		mContext = context;
-		mGson = new Gson();
+		mGson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 		createClient();
 		setUserAgent(mContext, mClient);
 		loadSessionId();
