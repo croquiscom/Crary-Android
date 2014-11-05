@@ -19,7 +19,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		super.setUp();
 
 		// It should be changed to your url
-		mBaseUrl = "http://192.168.23.7:3000/";
+		mBaseUrl = "http://192.168.56.1:3000/";
 	}
 
 	@LargeTest

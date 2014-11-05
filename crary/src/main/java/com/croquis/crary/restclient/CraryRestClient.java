@@ -101,11 +101,15 @@ public class CraryRestClient {
 		mImplApache.get(getBaseUrl() + path, parameters, complete, c);
 	}
 
-	public <T> void post(String path, JsonObject parameters, Class<T> c, OnRequestComplete<T> complete) {
+	public <T> void get(String path, Object parameters, Class<T> c, OnRequestComplete<T> complete) {
+		mImplApache.get(getBaseUrl() + path, parameters, complete, c);
+	}
+
+	public <T> void post(String path, Object parameters, Class<T> c, OnRequestComplete<T> complete) {
 		mImplApache.post(getBaseUrl() + path, parameters, complete, c);
 	}
 
-	public <T> void postGzip(String path, JsonObject parameters, Class<T> c, OnRequestComplete<T> complete) {
+	public <T> void postGzip(String path, Object parameters, Class<T> c, OnRequestComplete<T> complete) {
 		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, c);
 	}
 }

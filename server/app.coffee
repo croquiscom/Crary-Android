@@ -7,6 +7,12 @@ setupRouter = (router) ->
   router.post '/ping', (req, res) ->
     res.sendResult response: req.body.message
 
+  router.get '/echo', (req, res) ->
+    res.sendResult req.query
+
+  router.post '/echo', (req, res) ->
+    res.sendResult req.body
+
   router.post '/setData', (req, res) ->
     req.session.data = req.body.data
     res.sendResult {}

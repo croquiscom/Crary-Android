@@ -18,7 +18,7 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		super.setUp();
 
 		// It should be changed to your url
-		mBaseUrl = "http://192.168.23.7:3000/";
+		mBaseUrl = "http://192.168.56.1:3000/";
 	}
 
 	private static class PingResult {
@@ -27,6 +27,20 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 
 	private static class DataResult {
 		String data;
+	}
+
+	private static class TestObject {
+		String a;
+		int b;
+		boolean c;
+		TestObject d;
+
+		TestObject(String a, int b, boolean c, TestObject d) {
+			this.a = a;
+			this.b = b;
+			this.c = c;
+			this.d = d;
+		}
 	}
 
 	@LargeTest
@@ -147,6 +161,36 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 				countDownLatch.countDown();
 			}
 		});
+
+		countDownLatch.await();
+	}
+
+	@LargeTest
+	public void testObject() throws InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(mBaseUrl);
+
+		TestObject parameters = new TestObject("message", 5, true, new TestObject("sub", 0, false, null));
+		OnRequestComplete<TestObject> check = new OnRequestComplete<TestObject>() {
+			@Override
+			public void onComplete(RestError error, TestObject result) {
+				assertNull(error);
+				assertNotNull(result);
+				assertEquals("message", result.a);
+				assertEquals(5, result.b);
+				assertEquals(true, result.c);
+				assertNotNull(result.d);
+				assertEquals("sub", result.d.a);
+				assertEquals(0, result.d.b);
+				assertEquals(false, result.d.c);
+				assertNull(result.d.d);
+				countDownLatch.countDown();
+			}
+		};
+		restClient.get("echo", parameters, TestObject.class, check);
+		restClient.post("echo", parameters, TestObject.class, check);
 
 		countDownLatch.await();
 	}

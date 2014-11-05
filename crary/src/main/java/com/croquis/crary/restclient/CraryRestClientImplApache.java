@@ -127,48 +127,52 @@ public class CraryRestClientImplApache {
 		return mContext.getSharedPreferences(COOKIE_SESSION, Context.MODE_PRIVATE);
 	}
 
-	public <T> void getNoCookie(String url, JSONObject json, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpGet(url + convertJSONtoQuery(json)), complete, c, false);
+	public <T> void getNoCookie(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, c, false);
 	}
 
-	public <T> void get(String url, JSONObject json, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpGet(url + convertJSONtoQuery(json)), complete, c, true);
+	public <T> void get(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, c, true);
 	}
 
-	public <T> void post(String url, JSONObject json, OnRequestComplete<T> complete, Class<T> c) {
-		post(url, convertJSONtoEntity(json), complete, c);
+	public <T> void post(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
+		post(url, convertParametersToEntity(parameters), complete, c);
 	}
 
-	public <T> void postGzip(String url, JSONObject json, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpPost(url), convertJSONtoGzipEntity(json), complete, c, true);
+	public <T> void postGzip(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, c, true);
 	}
 
 	public <T> void post(String url, HttpEntity entity, OnRequestComplete<T> complete, Class<T> c) {
 		request(new HttpPost(url), entity, complete, c, true);
 	}
 
-	public <T> void put(String url, JSONObject json, OnRequestComplete<T> complete, Class<T> c) {
-		put(url, convertJSONtoEntity(json), complete, c);
+	public <T> void put(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
+		put(url, convertParametersToEntity(parameters), complete, c);
 	}
 
 	public <T> void put(String url, HttpEntity entity, OnRequestComplete<T> complete, Class<T> c) {
 		request(new HttpPut(url), entity, complete, c, true);
 	}
 
-	public <T> void delete(String url, JSONObject json, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpDelete(url + convertJSONtoQuery(json)), complete, c, true);
+	public <T> void delete(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpDelete(url + convertParametersToQuery(parameters)), complete, c, true);
 	}
 
-	public <T> void get(String url, JsonObject json, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpGet(url + convertJSONtoQuery(json)), complete, c, true);
+	public <T> void get(String url, JsonObject parameters, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, c, true);
 	}
 
-	public <T> void post(String url, JsonObject json, OnRequestComplete<T> complete, Class<T> c) {
-		post(url, convertJSONtoEntity(json), complete, c);
+	public <T> void get(String url, Object parameters, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, c, true);
 	}
 
-	public <T> void postGzip(String url, JsonObject json, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpPost(url), convertJSONtoGzipEntity(json), complete, c, true);
+	public <T> void post(String url, Object parameters, OnRequestComplete<T> complete, Class<T> c) {
+		post(url, convertParametersToEntity(parameters), complete, c);
+	}
+
+	public <T> void postGzip(String url, Object parameters, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, c, true);
 	}
 
 	private <T> void request(HttpEntityEnclosingRequestBase request, HttpEntity entity,
@@ -208,18 +212,18 @@ public class CraryRestClientImplApache {
 		}).start();
 	}
 
-	private String convertJSONtoQuery(JSONObject json) {
-		if (json == null) {
+	private String convertParametersToQuery(JSONObject parameters) {
+		if (parameters == null) {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("?");
 		try {
 			@SuppressWarnings("unchecked")
-			Iterator<String> jsonIter = json.keys();
+			Iterator<String> jsonIter = parameters.keys();
 			while (jsonIter.hasNext()) {
 				String key = jsonIter.next();
-				sb.append(key).append("=").append(json.get(key)).append("&");
+				sb.append(key).append("=").append(parameters.get(key)).append("&");
 			}
 		} catch (JSONException e) {
 		}
@@ -227,27 +231,42 @@ public class CraryRestClientImplApache {
 		return sb.toString().replace(' ', '+');
 	}
 
-	private String convertJSONtoQuery(JsonObject json) {
-		if (json == null) {
+	private String convertParametersToQuery(JsonObject parameters) {
+		if (parameters == null) {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("?");
-		for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-			JsonElement value = entry.getValue();
-			if (value.isJsonPrimitive()) {
-				sb.append(entry.getKey()).append("=").append(value.getAsString()).append("&");
-			}
-		}
+		convertParametersToQuery(sb, "", parameters);
 		sb.deleteCharAt(sb.length() - 1);
 		return sb.toString().replace(' ', '+');
 	}
 
-	private HttpEntity convertJSONtoEntity(JSONObject json) {
+	private void convertParametersToQuery(StringBuilder sb, String path, JsonObject parameters) {
+		for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
+			JsonElement value = entry.getValue();
+			String subpath = path.length()>0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
+			if (value.isJsonPrimitive()) {
+				sb.append(subpath).append("=").append(value.getAsString()).append("&");
+			} else if (value.isJsonObject()) {
+				convertParametersToQuery(sb, subpath, (JsonObject) value);
+			}
+		}
+	}
+
+	private String convertParametersToQuery(Object parameters) {
+		JsonElement json = mGson.toJsonTree(parameters);
+		if (json.isJsonObject()) {
+			return convertParametersToQuery((JsonObject) json);
+		}
+		return "";
+	}
+
+	private HttpEntity convertParametersToEntity(JSONObject parameters) {
 		StringEntity entity = null;
-		if (json != null) {
+		if (parameters != null) {
 			try {
-				entity = new StringEntity(json.toString(), HTTP.UTF_8);
+				entity = new StringEntity(parameters.toString(), HTTP.UTF_8);
 				entity.setContentType("application/json");
 			} catch (UnsupportedEncodingException e) {
 			}
@@ -255,11 +274,11 @@ public class CraryRestClientImplApache {
 		return entity;
 	}
 
-	private HttpEntity convertJSONtoEntity(JsonObject json) {
+	private HttpEntity convertParametersToEntity(Object parameters) {
 		StringEntity entity = null;
-		if (json != null) {
+		if (parameters != null) {
 			try {
-				entity = new StringEntity(mGson.toJson(json), HTTP.UTF_8);
+				entity = new StringEntity(mGson.toJson(parameters), HTTP.UTF_8);
 				entity.setContentType("application/json");
 			} catch (UnsupportedEncodingException e) {
 			}
@@ -267,15 +286,15 @@ public class CraryRestClientImplApache {
 		return entity;
 	}
 
-	private HttpEntity convertJSONtoGzipEntity(JSONObject json) {
-		ByteArrayEntity entity = new ByteArrayEntity(gzipDeflate(json.toString().getBytes()));
+	private HttpEntity convertParametersToGzipEntity(JSONObject parameters) {
+		ByteArrayEntity entity = new ByteArrayEntity(gzipDeflate(parameters.toString().getBytes()));
 		entity.setContentEncoding("gzip");
 		entity.setContentType("application/json");
 		return entity;
 	}
 
-	private HttpEntity convertJSONtoGzipEntity(JsonObject json) {
-		ByteArrayEntity entity = new ByteArrayEntity(gzipDeflate(mGson.toJson(json).getBytes()));
+	private HttpEntity convertParametersToGzipEntity(Object parameters) {
+		ByteArrayEntity entity = new ByteArrayEntity(gzipDeflate(mGson.toJson(parameters).getBytes()));
 		entity.setContentEncoding("gzip");
 		entity.setContentType("application/json");
 		return entity;
