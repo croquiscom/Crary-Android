@@ -5,6 +5,7 @@ import android.test.suitebuilder.annotation.LargeTest;
 
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
@@ -48,7 +49,7 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 			assertEquals(a, this.a);
 			assertEquals(b, this.b);
 			assertEquals(c, this.c);
-			if (d==null) {
+			if (d == null) {
 				assertNull(this.d);
 			} else {
 				assertNotNull(this.d);
@@ -227,6 +228,33 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		};
 		restClient.post("echo", parameters, new TypeToken<ArrayList<TestObject>>() {
 		}.getType(), check);
+
+		countDownLatch.await();
+	}
+
+	@LargeTest
+	public void testListWithGet() throws InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(mBaseUrl);
+
+		JsonObject parameters = new JsonObject();
+		JsonArray list = new JsonArray();
+		list.add(new JsonPrimitive("message"));
+		list.add(new JsonPrimitive(5));
+		list.add(new JsonPrimitive(true));
+		parameters.add("data", list);
+		restClient.get("echo", parameters, JsonObject.class, new OnRequestComplete<JsonObject>() {
+			@Override
+			public void onComplete(RestError error, JsonObject result) {
+				JsonArray data = result.getAsJsonArray("data");
+				assertEquals("message", data.get(0).getAsString());
+				assertEquals(5, data.get(1).getAsInt());
+				assertEquals(true, data.get(2).getAsBoolean());
+				countDownLatch.countDown();
+			}
+		});
 
 		countDownLatch.await();
 	}

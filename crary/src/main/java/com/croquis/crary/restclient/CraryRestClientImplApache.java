@@ -11,6 +11,7 @@ import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
 import com.croquis.crary.util.JSONHelper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -243,15 +244,30 @@ public class CraryRestClientImplApache {
 		return sb.toString().replace(' ', '+');
 	}
 
+	private void convertParametersToQuery(StringBuilder sb, String path, JsonElement parameters) {
+		if (parameters.isJsonObject()) {
+			convertParametersToQuery(sb, path, (JsonObject) parameters);
+		} else if (parameters.isJsonArray()) {
+			convertParametersToQuery(sb, path, (JsonArray) parameters);
+		} else if (parameters.isJsonPrimitive()) {
+			sb.append(path).append("=").append(parameters.getAsString()).append("&");
+		} else {
+			// null
+			sb.append(path).append("=").append("&");
+		}
+	}
+
 	private void convertParametersToQuery(StringBuilder sb, String path, JsonObject parameters) {
 		for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
-			JsonElement value = entry.getValue();
 			String subpath = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
-			if (value.isJsonPrimitive()) {
-				sb.append(subpath).append("=").append(value.getAsString()).append("&");
-			} else if (value.isJsonObject()) {
-				convertParametersToQuery(sb, subpath, (JsonObject) value);
-			}
+			convertParametersToQuery(sb, subpath, entry.getValue());
+		}
+	}
+
+	private void convertParametersToQuery(StringBuilder sb, String path, JsonArray parameters) {
+		for (int i = 0; i < parameters.size(); i++) {
+			String subpath = path + "[" + i + "]";
+			convertParametersToQuery(sb, subpath, parameters.get(i));
 		}
 	}
 
