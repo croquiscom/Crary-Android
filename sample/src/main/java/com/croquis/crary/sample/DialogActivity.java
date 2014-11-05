@@ -4,14 +4,14 @@ package com.croquis.crary.sample;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
+import com.croquis.crary.app.CraryActionBarActivity;
 import com.croquis.crary.dialog.CraryInputDialog;
 import com.croquis.crary.dialog.CraryMessageBox;
 import com.croquis.crary.dialog.ProgressDialogHelper;
 
-public class DialogActivity extends ActionBarActivity{
+public class DialogActivity extends CraryActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

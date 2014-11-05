@@ -15,7 +15,7 @@ ext.POM_DEVELOPER_NAME="Chudong Yeo"
 
 ext.ANDROID_BUILD_TARGET_SDK_VERSION="19"
 ext.ANDROID_BUILD_TOOLS_VERSION="19.1.0"
-ext.ANDROID_BUILD_SDK_VERSION="9"
+ext.ANDROID_BUILD_SDK_VERSION="19"
 
 ext.RELEASE_REPOSITORY_URL="file://" + rootDir + "/deploy/releases"
 ext.SNAPSHOT_REPOSITORY_URL="file://" + rootDir + "/deploy/snapshots"
@@ -40,7 +40,9 @@ android {
 }
 
 dependencies {
+    compile 'com.android.support:appcompat-v7:20.0.0'
     compile 'com.google.code.gson:gson:2.3';
+    compile 'io.reactivex:rxjava:1.0.+';
     compile 'org.apache.httpcomponents:httpmime:4.3.+';
 }
 
