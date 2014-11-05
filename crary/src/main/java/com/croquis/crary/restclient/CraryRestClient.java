@@ -9,6 +9,8 @@ import org.apache.http.HttpEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
+
 public class CraryRestClient {
 	public static class RestError extends Throwable {
 		private static final long serialVersionUID = 1L;
@@ -97,19 +99,19 @@ public class CraryRestClient {
 		mImplApache.delete(getBaseUrl() + path, parameters, complete, JSONObject.class);
 	}
 
-	public <T> void get(String path, JsonObject parameters, Class<T> c, OnRequestComplete<T> complete) {
-		mImplApache.get(getBaseUrl() + path, parameters, complete, c);
+	public <T> void get(String path, JsonObject parameters, Type type, OnRequestComplete<T> complete) {
+		mImplApache.get(getBaseUrl() + path, parameters, complete, type);
 	}
 
-	public <T> void get(String path, Object parameters, Class<T> c, OnRequestComplete<T> complete) {
-		mImplApache.get(getBaseUrl() + path, parameters, complete, c);
+	public <T> void get(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
+		mImplApache.get(getBaseUrl() + path, parameters, complete, type);
 	}
 
-	public <T> void post(String path, Object parameters, Class<T> c, OnRequestComplete<T> complete) {
-		mImplApache.post(getBaseUrl() + path, parameters, complete, c);
+	public <T> void post(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
+		mImplApache.post(getBaseUrl() + path, parameters, complete, type);
 	}
 
-	public <T> void postGzip(String path, Object parameters, Class<T> c, OnRequestComplete<T> complete) {
-		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, c);
+	public <T> void postGzip(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
+		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, type);
 	}
 }

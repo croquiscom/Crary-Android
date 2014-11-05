@@ -53,6 +53,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -136,7 +137,7 @@ public class CraryRestClientImplApache {
 	}
 
 	public <T> void post(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		post(url, convertParametersToEntity(parameters), complete, c);
+		request(new HttpPost(url), convertParametersToEntity(parameters), complete, c, true);
 	}
 
 	public <T> void postGzip(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
@@ -148,7 +149,7 @@ public class CraryRestClientImplApache {
 	}
 
 	public <T> void put(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		put(url, convertParametersToEntity(parameters), complete, c);
+		request(new HttpPut(url), convertParametersToEntity(parameters), complete, c, true);
 	}
 
 	public <T> void put(String url, HttpEntity entity, OnRequestComplete<T> complete, Class<T> c) {
@@ -159,31 +160,31 @@ public class CraryRestClientImplApache {
 		request(new HttpDelete(url + convertParametersToQuery(parameters)), complete, c, true);
 	}
 
-	public <T> void get(String url, JsonObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, c, true);
+	public <T> void get(String url, JsonObject parameters, OnRequestComplete<T> complete, Type type) {
+		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, type, true);
 	}
 
-	public <T> void get(String url, Object parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, c, true);
+	public <T> void get(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
+		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, type, true);
 	}
 
-	public <T> void post(String url, Object parameters, OnRequestComplete<T> complete, Class<T> c) {
-		post(url, convertParametersToEntity(parameters), complete, c);
+	public <T> void post(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
+		request(new HttpPost(url), convertParametersToEntity(parameters), complete, type, true);
 	}
 
-	public <T> void postGzip(String url, Object parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, c, true);
+	public <T> void postGzip(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
+		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, type, true);
 	}
 
 	private <T> void request(HttpEntityEnclosingRequestBase request, HttpEntity entity,
-							 CraryRestClient.OnRequestComplete<T> complete, Class<T> c, boolean useCookie) {
+							 CraryRestClient.OnRequestComplete<T> complete, Type type, boolean useCookie) {
 		if (entity != null) {
 			request.setEntity(entity);
 		}
-		request(request, complete, c, useCookie);
+		request(request, complete, type, useCookie);
 	}
 
-	private <T> void request(final HttpRequestBase request, final OnRequestComplete<T> complete, final Class<T> c,
+	private <T> void request(final HttpRequestBase request, final OnRequestComplete<T> complete, final Type type,
 							 final boolean useCookie) {
 		if (useCookie) {
 			request.setHeader(getCookieHeader());
@@ -206,7 +207,7 @@ public class CraryRestClientImplApache {
 				if (response != null && useCookie) {
 					updateCookieSessionID(response);
 				}
-				processResponse(response, complete, c);
+				processResponse(response, complete, type);
 
 			}
 		}).start();
@@ -245,7 +246,7 @@ public class CraryRestClientImplApache {
 	private void convertParametersToQuery(StringBuilder sb, String path, JsonObject parameters) {
 		for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
 			JsonElement value = entry.getValue();
-			String subpath = path.length()>0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
+			String subpath = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
 			if (value.isJsonPrimitive()) {
 				sb.append(subpath).append("=").append(value.getAsString()).append("&");
 			} else if (value.isJsonObject()) {
@@ -309,7 +310,7 @@ public class CraryRestClientImplApache {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> void processResponse(HttpResponse response, OnRequestComplete<T> complete, Class<T> c) {
+	private <T> void processResponse(HttpResponse response, OnRequestComplete<T> complete, Type type) {
 		String result = getResponseString(response);
 		if (result == null) {
 			callOnComplete(complete, RestError.NETWORK_ERROR, null);
@@ -317,14 +318,14 @@ public class CraryRestClientImplApache {
 		}
 
 		T json = null;
-		if (c == JSONObject.class) {
+		if (type == JSONObject.class) {
 			try {
 				json = (T) new JSONObject(result);
 			} catch (JSONException e) {
 				callOnComplete(complete, RestError.UNRECOGNIZABLE_RESULT, null);
 				return;
 			}
-		} else if (c == JSONArray.class) {
+		} else if (type == JSONArray.class) {
 			try {
 				json = (T) new JSONArray(result);
 			} catch (JSONException e) {
@@ -332,7 +333,7 @@ public class CraryRestClientImplApache {
 				return;
 			}
 		} else {
-			json = mGson.fromJson(result, c);
+			json = mGson.fromJson(result, type);
 		}
 		RestError error = getResponseError(response, json);
 		if (error != null) {

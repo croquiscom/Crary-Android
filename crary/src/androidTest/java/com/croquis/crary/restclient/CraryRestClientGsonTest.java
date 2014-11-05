@@ -7,7 +7,9 @@ import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 public class CraryRestClientGsonTest extends AndroidTestCase {
@@ -40,6 +42,18 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 			this.b = b;
 			this.c = c;
 			this.d = d;
+		}
+
+		void test(String a, int b, boolean c, TestObject d) {
+			assertEquals(a, this.a);
+			assertEquals(b, this.b);
+			assertEquals(c, this.c);
+			if (d==null) {
+				assertNull(this.d);
+			} else {
+				assertNotNull(this.d);
+				this.d.test(d.a, d.b, d.c, d.d);
+			}
 		}
 	}
 
@@ -178,19 +192,41 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 			public void onComplete(RestError error, TestObject result) {
 				assertNull(error);
 				assertNotNull(result);
-				assertEquals("message", result.a);
-				assertEquals(5, result.b);
-				assertEquals(true, result.c);
-				assertNotNull(result.d);
-				assertEquals("sub", result.d.a);
-				assertEquals(0, result.d.b);
-				assertEquals(false, result.d.c);
-				assertNull(result.d.d);
+				result.test("message", 5, true, new TestObject("sub", 0, false, null));
 				countDownLatch.countDown();
 			}
 		};
 		restClient.get("echo", parameters, TestObject.class, check);
 		restClient.post("echo", parameters, TestObject.class, check);
+
+		countDownLatch.await();
+	}
+
+	@LargeTest
+	public void testList() throws InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(mBaseUrl);
+
+		ArrayList<TestObject> parameters = new ArrayList<TestObject>();
+		parameters.add(new TestObject("obj1", 11, false, null));
+		parameters.add(new TestObject("obj2", 22, true, new TestObject("sub", 0, false, null)));
+		parameters.add(new TestObject("obj3", 33, false, null));
+		OnRequestComplete<ArrayList<TestObject>> check = new OnRequestComplete<ArrayList<TestObject>>() {
+			@Override
+			public void onComplete(RestError error, ArrayList<TestObject> result) {
+				assertNull(error);
+				assertNotNull(result);
+				assertEquals(3, result.size());
+				result.get(0).test("obj1", 11, false, null);
+				result.get(1).test("obj2", 22, true, new TestObject("sub", 0, false, null));
+				result.get(2).test("obj3", 33, false, null);
+				countDownLatch.countDown();
+			}
+		};
+		restClient.post("echo", parameters, new TypeToken<ArrayList<TestObject>>() {
+		}.getType(), check);
 
 		countDownLatch.await();
 	}
