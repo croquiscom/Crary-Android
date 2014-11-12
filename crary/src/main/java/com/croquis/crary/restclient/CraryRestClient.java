@@ -114,4 +114,12 @@ public class CraryRestClient {
 	public <T> void postGzip(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, type);
 	}
+
+	public <T> void put(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
+		mImplApache.put(getBaseUrl() + path, parameters, complete, type);
+	}
+
+	public <T> void delete(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
+		mImplApache.delete(getBaseUrl() + path, parameters, complete, type);
+	}
 }

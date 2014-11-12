@@ -179,6 +179,14 @@ public class CraryRestClientImplApache {
 		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, type, true);
 	}
 
+	public <T> void put(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
+		request(new HttpPut(url), convertParametersToEntity(parameters), complete, type, true);
+	}
+
+	public <T> void delete(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
+		request(new HttpDelete(url + convertParametersToQuery(parameters)), complete, type, true);
+	}
+
 	private <T> void request(HttpEntityEnclosingRequestBase request, HttpEntity entity,
 							 CraryRestClient.OnRequestComplete<T> complete, Type type, boolean useCookie) {
 		if (entity != null) {
