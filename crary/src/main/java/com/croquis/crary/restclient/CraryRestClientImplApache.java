@@ -2,8 +2,6 @@ package com.croquis.crary.restclient;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -47,15 +45,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class CraryRestClientImplApache {
 	private static final int MAX_TOTAL_CONNECTION = 20;
@@ -73,11 +67,13 @@ public class CraryRestClientImplApache {
 
 	Handler mHandler = new Handler(Looper.getMainLooper());
 
-	public CraryRestClientImplApache(Context context, Gson gson) {
+	public CraryRestClientImplApache(Context context, Gson gson, String userAgent) {
 		mContext = context;
 		mGson = gson;
 		createClient();
-		setUserAgent(mContext, mClient);
+		if (userAgent != null) {
+			HttpProtocolParams.setUserAgent(mClient.getParams(), userAgent);
+		}
 		loadSessionId();
 	}
 
@@ -98,17 +94,6 @@ public class CraryRestClientImplApache {
 
 		ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(connManagerParams, schemeRegistry);
 		mClient = new DefaultHttpClient(cm, null);
-	}
-
-	private void setUserAgent(Context context, HttpClient client) {
-		try {
-			String appVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-			int resId = context.getResources().getIdentifier("app_name", "string", context.getPackageName());
-			String appName = resId == 0 ? "" : context.getString(resId);
-			String userAgent = String.format("%s/%s (%s; Android %s)", appName, appVersion, Build.MODEL, Build.VERSION.RELEASE);
-			HttpProtocolParams.setUserAgent(client.getParams(), userAgent);
-		} catch (PackageManager.NameNotFoundException e) {
-		}
 	}
 
 	private void loadSessionId() {
@@ -230,14 +215,14 @@ public class CraryRestClientImplApache {
 	}
 
 	private HttpEntity convertParametersToGzipEntity(JSONObject parameters) {
-		ByteArrayEntity entity = new ByteArrayEntity(gzipDeflate(parameters.toString().getBytes()));
+		ByteArrayEntity entity = new ByteArrayEntity(CraryRestClient.gzipDeflate(parameters.toString().getBytes()));
 		entity.setContentEncoding("gzip");
 		entity.setContentType("application/json");
 		return entity;
 	}
 
 	private HttpEntity convertParametersToGzipEntity(Object parameters) {
-		ByteArrayEntity entity = new ByteArrayEntity(gzipDeflate(mGson.toJson(parameters).getBytes()));
+		ByteArrayEntity entity = new ByteArrayEntity(CraryRestClient.gzipDeflate(mGson.toJson(parameters).getBytes()));
 		entity.setContentEncoding("gzip");
 		entity.setContentType("application/json");
 		return entity;
@@ -306,7 +291,7 @@ public class CraryRestClientImplApache {
 				}
 				byte[] data = EntityUtils.toByteArray(entity);
 				if (gzipped) {
-					data = gzipInflate(data);
+					data = CraryRestClient.gzipInflate(data);
 				}
 				entity.consumeContent();
 				result = new String(data, charset);
@@ -341,42 +326,6 @@ public class CraryRestClientImplApache {
 				}
 			}
 		});
-	}
-
-	private byte[] gzipDeflate(byte[] data) {
-		byte[] gzipped = new byte[0];
-		if (data.length != 0) {
-			try {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				GZIPOutputStream gzos = new GZIPOutputStream(baos);
-				gzos.write(data);
-				gzos.close();
-				gzipped = baos.toByteArray();
-				baos.close();
-			} catch (IOException e) {
-			}
-		}
-		return gzipped;
-	}
-
-	private byte[] gzipInflate(byte[] data) {
-		byte[] ungzipped = new byte[0];
-		if (data.length != 0) {
-			try {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				GZIPInputStream gzis = new GZIPInputStream(new ByteArrayInputStream(data));
-				byte[] buffer = new byte[4096];
-				int n;
-				while ((n = gzis.read(buffer)) != -1) {
-					baos.write(buffer, 0, n);
-				}
-				gzis.close();
-				ungzipped = baos.toByteArray();
-				baos.close();
-			} catch (IOException e) {
-			}
-		}
-		return ungzipped;
 	}
 
 	private void updateCookieSessionID(HttpResponse response) {

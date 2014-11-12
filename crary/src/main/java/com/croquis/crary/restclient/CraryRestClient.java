@@ -1,6 +1,8 @@
 package com.croquis.crary.restclient;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.croquis.crary.OnTaskComplete;
 import com.google.gson.FieldNamingPolicy;
@@ -15,9 +17,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class CraryRestClient {
 	public static class RestError extends Throwable {
@@ -41,6 +48,7 @@ public class CraryRestClient {
 	private static CraryRestClient sSharedClient;
 
 	private CraryRestClientImplApache mImplApache;
+	private CraryRestClientImplJavaNet mImplJavaNet;
 	private Gson mGson;
 	private String mBaseUrl = "";
 
@@ -53,8 +61,22 @@ public class CraryRestClient {
 	}
 
 	private CraryRestClient(Context context) {
+		String userAgent = null;
+		try {
+			String appVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+			if (appVersion == null) {
+				appVersion = "Unknown";
+			}
+			int resId = context.getResources().getIdentifier("app_name", "string", context.getPackageName());
+			String appName = resId == 0 ? "Unknown" : context.getString(resId);
+			userAgent = String.format("%s/%s (%s; Android %s)", appName, appVersion, Build.MODEL, Build.VERSION.RELEASE);
+		} catch (PackageManager.NameNotFoundException e) {
+		}
 		mGson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-		mImplApache = new CraryRestClientImplApache(context, mGson);
+		mImplApache = new CraryRestClientImplApache(context, mGson, userAgent);
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+//			mImplJavaNet = new CraryRestClientImplJavaNet(context, mGson, userAgent);
+//		}
 	}
 
 	public void setBaseUrl(String baseUrl) {
@@ -120,7 +142,11 @@ public class CraryRestClient {
 	}
 
 	public <T> void get(String path, JsonObject parameters, Type type, OnRequestComplete<T> complete) {
-		mImplApache.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		if (mImplJavaNet != null) {
+			mImplJavaNet.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		} else {
+			mImplApache.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		}
 	}
 
 	public <T> void get(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
@@ -128,7 +154,11 @@ public class CraryRestClient {
 	}
 
 	public <T> void get(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
-		mImplApache.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		if (mImplJavaNet != null) {
+			mImplJavaNet.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		} else {
+			mImplApache.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		}
 	}
 
 	public <T> void post(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
@@ -136,7 +166,11 @@ public class CraryRestClient {
 	}
 
 	public <T> void post(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
-		mImplApache.post(getBaseUrl() + path, parameters, complete, type);
+		if (mImplJavaNet != null) {
+			mImplJavaNet.post(getBaseUrl() + path, parameters, complete, type);
+		} else {
+			mImplApache.post(getBaseUrl() + path, parameters, complete, type);
+		}
 	}
 
 	public <T> void postGzip(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
@@ -144,7 +178,11 @@ public class CraryRestClient {
 	}
 
 	public <T> void postGzip(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
-		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, type);
+		if (mImplJavaNet != null) {
+			mImplJavaNet.postGzip(getBaseUrl() + path, parameters, complete, type);
+		} else {
+			mImplApache.postGzip(getBaseUrl() + path, parameters, complete, type);
+		}
 	}
 
 	public <T> void put(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
@@ -152,7 +190,11 @@ public class CraryRestClient {
 	}
 
 	public <T> void put(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
-		mImplApache.put(getBaseUrl() + path, parameters, complete, type);
+		if (mImplJavaNet != null) {
+			mImplJavaNet.put(getBaseUrl() + path, parameters, complete, type);
+		} else {
+			mImplApache.put(getBaseUrl() + path, parameters, complete, type);
+		}
 	}
 
 	public <T> void delete(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
@@ -160,7 +202,11 @@ public class CraryRestClient {
 	}
 
 	public <T> void delete(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
-		mImplApache.delete(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		if (mImplJavaNet != null) {
+			mImplJavaNet.delete(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		} else {
+			mImplApache.delete(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+		}
 	}
 
 	//============================================================
@@ -229,5 +275,41 @@ public class CraryRestClient {
 			return convertParametersToQuery((JsonObject) json);
 		}
 		return "";
+	}
+
+	static byte[] gzipDeflate(byte[] data) {
+		byte[] gzipped = new byte[0];
+		if (data.length != 0) {
+			try {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				GZIPOutputStream gzos = new GZIPOutputStream(baos);
+				gzos.write(data);
+				gzos.close();
+				gzipped = baos.toByteArray();
+				baos.close();
+			} catch (IOException e) {
+			}
+		}
+		return gzipped;
+	}
+
+	static byte[] gzipInflate(byte[] data) {
+		byte[] ungzipped = new byte[0];
+		if (data.length != 0) {
+			try {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				GZIPInputStream gzis = new GZIPInputStream(new ByteArrayInputStream(data));
+				byte[] buffer = new byte[4096];
+				int n;
+				while ((n = gzis.read(buffer)) != -1) {
+					baos.write(buffer, 0, n);
+				}
+				gzis.close();
+				ungzipped = baos.toByteArray();
+				baos.close();
+			} catch (IOException e) {
+			}
+		}
+		return ungzipped;
 	}
 }
