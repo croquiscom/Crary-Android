@@ -5,7 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import com.croquis.crary.OnTaskComplete;
-import com.google.gson.FieldNamingPolicy;
+import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class CraryRestClient {
 			userAgent = String.format("%s/%s (%s; Android %s)", appName, appVersion, Build.MODEL, Build.VERSION.RELEASE);
 		} catch (PackageManager.NameNotFoundException e) {
 		}
-		mGson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+		mGson = new GsonBuilder().setFieldNamingStrategy(new GsonFieldNamingStrategy()).create();
 		mImplApache = new CraryRestClientImplApache(context, mGson, userAgent);
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 //			mImplJavaNet = new CraryRestClientImplJavaNet(context, mGson, userAgent);
@@ -311,5 +312,26 @@ public class CraryRestClient {
 			}
 		}
 		return ungzipped;
+	}
+
+	private static class GsonFieldNamingStrategy implements FieldNamingStrategy {
+		@Override
+		public String translateName(Field f) {
+			String name = f.getName();
+			StringBuilder spans = new StringBuilder();
+			int i = 0;
+			if (name.charAt(0) == 'm' && Character.isUpperCase(name.charAt(1))) {
+				// ignore first m that means member
+				i = 1;
+			}
+			for (; i < name.length(); i++) {
+				char character = name.charAt(i);
+				if (Character.isUpperCase(character) && spans.length() != 0) {
+					spans.append("_");
+				}
+				spans.append(character);
+			}
+			return spans.toString().toLowerCase();
+		}
 	}
 }

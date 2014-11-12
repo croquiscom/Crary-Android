@@ -58,10 +58,10 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		}
 	}
 
-	private static class UnderlineConvertResult {
+	private static class UnderlineConvertObject {
 		int userId;
 		String fullName;
-		String phoneNumber;
+		String mPhoneNumber;
 	}
 
 	@LargeTest
@@ -267,23 +267,41 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 
 	@LargeTest
 	public void testUnderlineConvert() throws InterruptedException {
-		final CountDownLatch countDownLatch = new CountDownLatch(1);
+		final CountDownLatch countDownLatch = new CountDownLatch(2);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
 
+		// check request
+		UnderlineConvertObject req = new UnderlineConvertObject();
+		req.userId = 123;
+		req.fullName = "Crary";
+		req.mPhoneNumber = "1-234-5678";
+		restClient.post("echo", req, JsonObject.class, new OnRequestComplete<JsonObject>() {
+			@Override
+			public void onComplete(RestError error, JsonObject result) {
+				assertNull(error);
+				assertNotNull(result);
+				assertEquals(123, result.get("user_id").getAsInt());
+				assertEquals("Crary", result.get("full_name").getAsString());
+				assertEquals("1-234-5678", result.get("phone_number").getAsString());
+				countDownLatch.countDown();
+			}
+		});
+
+		// check response
 		JsonObject parameters = new JsonObject();
 		parameters.addProperty("user_id", 123);
 		parameters.addProperty("full_name", "Crary");
 		parameters.addProperty("phone_number", "1-234-5678");
-		restClient.post("echo", parameters, UnderlineConvertResult.class, new OnRequestComplete<UnderlineConvertResult>() {
+		restClient.post("echo", parameters, UnderlineConvertObject.class, new OnRequestComplete<UnderlineConvertObject>() {
 			@Override
-			public void onComplete(RestError error, UnderlineConvertResult result) {
+			public void onComplete(RestError error, UnderlineConvertObject result) {
 				assertNull(error);
 				assertNotNull(result);
 				assertEquals(123, result.userId);
 				assertEquals("Crary", result.fullName);
-				assertEquals("1-234-5678", result.phoneNumber);
+				assertEquals("1-234-5678", result.mPhoneNumber);
 				countDownLatch.countDown();
 			}
 		});
