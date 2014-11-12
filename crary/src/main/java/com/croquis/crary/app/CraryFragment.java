@@ -1,29 +1,17 @@
 package com.croquis.crary.app;
 
-import android.preference.PreferenceActivity;
+import android.app.Fragment;
 import android.util.Log;
 
 import rx.Observable;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
-public class CraryPreferenceActivity extends PreferenceActivity {
-	@Override
-	public void onStart() {
-		super.onStart();
-		((CraryApplication) getApplication()).activityStarted(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		((CraryApplication) getApplication()).activityStopped(this);
-	}
-
+public class CraryFragment extends Fragment {
 	private CompositeSubscription mSubscriptions = new CompositeSubscription();
 
 	@Override
-	protected void onDestroy() {
+	public void onDestroy() {
 		super.onDestroy();
 		mSubscriptions.unsubscribe();
 	}
