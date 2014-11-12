@@ -10,12 +10,7 @@ import android.os.Looper;
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
 import com.croquis.crary.util.JSONHelper;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -58,9 +53,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -80,9 +73,9 @@ public class CraryRestClientImplApache {
 
 	Handler mHandler = new Handler(Looper.getMainLooper());
 
-	public CraryRestClientImplApache(Context context) {
+	public CraryRestClientImplApache(Context context, Gson gson) {
 		mContext = context;
-		mGson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+		mGson = gson;
 		createClient();
 		setUserAgent(mContext, mClient);
 		loadSessionId();
@@ -131,12 +124,12 @@ public class CraryRestClientImplApache {
 		return mContext.getSharedPreferences(COOKIE_SESSION, Context.MODE_PRIVATE);
 	}
 
-	public <T> void getNoCookie(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, c, false);
+	public <T> void getNoCookie(String url, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpGet(url), complete, c, false);
 	}
 
-	public <T> void get(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, c, true);
+	public <T> void get(String url, OnRequestComplete<T> complete, Type type) {
+		request(new HttpGet(url), complete, type, true);
 	}
 
 	public <T> void post(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
@@ -159,16 +152,8 @@ public class CraryRestClientImplApache {
 		request(new HttpPut(url), entity, complete, c, true);
 	}
 
-	public <T> void delete(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpDelete(url + convertParametersToQuery(parameters)), complete, c, true);
-	}
-
-	public <T> void get(String url, JsonObject parameters, OnRequestComplete<T> complete, Type type) {
-		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, type, true);
-	}
-
-	public <T> void get(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
-		request(new HttpGet(url + convertParametersToQuery(parameters)), complete, type, true);
+	public <T> void delete(String url, OnRequestComplete<T> complete, Type type) {
+		request(new HttpDelete(url), complete, type, true);
 	}
 
 	public <T> void post(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
@@ -181,10 +166,6 @@ public class CraryRestClientImplApache {
 
 	public <T> void put(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
 		request(new HttpPut(url), convertParametersToEntity(parameters), complete, type, true);
-	}
-
-	public <T> void delete(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
-		request(new HttpDelete(url + convertParametersToQuery(parameters)), complete, type, true);
 	}
 
 	private <T> void request(HttpEntityEnclosingRequestBase request, HttpEntity entity,
@@ -222,71 +203,6 @@ public class CraryRestClientImplApache {
 
 			}
 		}).start();
-	}
-
-	private String convertParametersToQuery(JSONObject parameters) {
-		if (parameters == null) {
-			return "";
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("?");
-		try {
-			@SuppressWarnings("unchecked")
-			Iterator<String> jsonIter = parameters.keys();
-			while (jsonIter.hasNext()) {
-				String key = jsonIter.next();
-				sb.append(key).append("=").append(parameters.get(key)).append("&");
-			}
-		} catch (JSONException e) {
-		}
-		sb.deleteCharAt(sb.length() - 1);
-		return sb.toString().replace(' ', '+');
-	}
-
-	private String convertParametersToQuery(JsonObject parameters) {
-		if (parameters == null) {
-			return "";
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("?");
-		convertParametersToQuery(sb, "", parameters);
-		sb.deleteCharAt(sb.length() - 1);
-		return sb.toString().replace(' ', '+');
-	}
-
-	private void convertParametersToQuery(StringBuilder sb, String path, JsonElement parameters) {
-		if (parameters.isJsonObject()) {
-			convertParametersToQuery(sb, path, (JsonObject) parameters);
-		} else if (parameters.isJsonArray()) {
-			convertParametersToQuery(sb, path, (JsonArray) parameters);
-		} else if (parameters.isJsonPrimitive()) {
-			sb.append(path).append("=").append(parameters.getAsString()).append("&");
-		} else {
-			// null
-			sb.append(path).append("=").append("&");
-		}
-	}
-
-	private void convertParametersToQuery(StringBuilder sb, String path, JsonObject parameters) {
-		for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
-			String subpath = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
-			convertParametersToQuery(sb, subpath, entry.getValue());
-		}
-	}
-
-	private void convertParametersToQuery(StringBuilder sb, String path, JsonArray parameters) {
-		for (int i = 0; i < parameters.size(); i++) {
-			String subpath = path + "[" + i + "]";
-			convertParametersToQuery(sb, subpath, parameters.get(i));
-		}
-	}
-
-	private String convertParametersToQuery(Object parameters) {
-		JsonElement json = mGson.toJsonTree(parameters);
-		if (json.isJsonObject()) {
-			return convertParametersToQuery((JsonObject) json);
-		}
-		return "";
 	}
 
 	private HttpEntity convertParametersToEntity(JSONObject parameters) {
