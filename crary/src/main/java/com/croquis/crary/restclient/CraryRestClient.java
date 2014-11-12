@@ -59,6 +59,9 @@ public class CraryRestClient {
 		mImplApache.clearSession();
 	}
 
+	//============================================================
+	// Methods for org.json
+
 	public void getUrl(String url, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
 		mImplApache.getNoCookie(url, parameters, complete, JSONObject.class);
 	}
@@ -99,24 +102,51 @@ public class CraryRestClient {
 		mImplApache.delete(getBaseUrl() + path, parameters, complete, JSONObject.class);
 	}
 
+	//============================================================
+	// Methods for Gson
+
+	public <T> void get(String path, JsonObject parameters, Class<T> klass, OnRequestComplete<T> complete) {
+		get(path, parameters, (Type) klass, complete);
+	}
+
 	public <T> void get(String path, JsonObject parameters, Type type, OnRequestComplete<T> complete) {
 		mImplApache.get(getBaseUrl() + path, parameters, complete, type);
+	}
+
+	public <T> void get(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
+		get(path, parameters, (Type) klass, complete);
 	}
 
 	public <T> void get(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		mImplApache.get(getBaseUrl() + path, parameters, complete, type);
 	}
 
+	public <T> void post(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
+		post(path, parameters, (Type) klass, complete);
+	}
+
 	public <T> void post(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		mImplApache.post(getBaseUrl() + path, parameters, complete, type);
+	}
+
+	public <T> void postGzip(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
+		postGzip(path, parameters, (Type) klass, complete);
 	}
 
 	public <T> void postGzip(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, type);
 	}
 
+	public <T> void put(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
+		put(path, parameters, (Type) klass, complete);
+	}
+
 	public <T> void put(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		mImplApache.put(getBaseUrl() + path, parameters, complete, type);
+	}
+
+	public <T> void delete(String path, Object parameters, Class<T> klass, OnRequestComplete<T> complete) {
+		delete(path, parameters, (Type) klass, complete);
 	}
 
 	public <T> void delete(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
