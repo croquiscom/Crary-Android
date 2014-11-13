@@ -1,4 +1,4 @@
-package com.croquis.crary.restclient;
+package com.croquis.crary.restclient.gson;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
