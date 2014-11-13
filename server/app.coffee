@@ -1,4 +1,6 @@
 crary = require 'crary'
+fs = require 'fs'
+multipart = require 'connect-multiparty'
 
 setupRouter = (router) ->
   router.get '/ping', (req, res) ->
@@ -10,7 +12,11 @@ setupRouter = (router) ->
   router.get '/echo', (req, res) ->
     res.sendResult req.query
 
-  router.post '/echo', (req, res) ->
+  router.post '/echo', multipart(), (req, res) ->
+    if req.files
+      for field, file of req.files
+        req.body[field] = file_name: file.name, size: file.size, type: file.type
+        fs.unlink file.path
     res.sendResult req.body
 
   router.post '/setData', (req, res) ->

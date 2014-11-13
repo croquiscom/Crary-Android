@@ -7,6 +7,8 @@ import android.os.Looper;
 
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
+import com.croquis.crary.restclient.gson.GsonMultipartEntityConverter;
+import com.croquis.crary.restclient.json.JsonMultipartEntityConverter;
 import com.croquis.crary.util.JSONHelper;
 import com.google.gson.Gson;
 
@@ -30,6 +32,8 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -49,6 +53,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CraryRestClientImplApache {
@@ -121,6 +126,10 @@ public class CraryRestClientImplApache {
 		request(new HttpPost(url), convertParametersToEntity(parameters), complete, c, true);
 	}
 
+	public <T> void post(String url, JSONObject parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpPost(url), addAttachmentsToMultipartEntity(JsonMultipartEntityConverter.convert(parameters), attachments), complete, c, true);
+	}
+
 	public <T> void postGzip(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
 		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, c, true);
 	}
@@ -131,6 +140,10 @@ public class CraryRestClientImplApache {
 
 	public <T> void put(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
 		request(new HttpPut(url), convertParametersToEntity(parameters), complete, c, true);
+	}
+
+	public <T> void put(String url, JSONObject parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<T> complete, Class<T> c) {
+		request(new HttpPut(url), addAttachmentsToMultipartEntity(JsonMultipartEntityConverter.convert(parameters), attachments), complete, c, true);
 	}
 
 	public <T> void put(String url, HttpEntity entity, OnRequestComplete<T> complete, Class<T> c) {
@@ -145,12 +158,20 @@ public class CraryRestClientImplApache {
 		request(new HttpPost(url), convertParametersToEntity(parameters), complete, type, true);
 	}
 
+	public <T> void post(String url, Object parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<T> complete, Type type) {
+		request(new HttpPost(url), addAttachmentsToMultipartEntity(GsonMultipartEntityConverter.convert(parameters, mGson), attachments), complete, type, true);
+	}
+
 	public <T> void postGzip(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
 		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, type, true);
 	}
 
 	public <T> void put(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
 		request(new HttpPut(url), convertParametersToEntity(parameters), complete, type, true);
+	}
+
+	public <T> void put(String url, Object parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<T> complete, Type type) {
+		request(new HttpPut(url), addAttachmentsToMultipartEntity(GsonMultipartEntityConverter.convert(parameters, mGson), attachments), complete, type, true);
 	}
 
 	private <T> void request(HttpEntityEnclosingRequestBase request, HttpEntity entity,
@@ -225,6 +246,15 @@ public class CraryRestClientImplApache {
 		ByteArrayEntity entity = new ByteArrayEntity(CraryRestClient.gzipDeflate(mGson.toJson(parameters).getBytes()));
 		entity.setContentEncoding("gzip");
 		entity.setContentType("application/json");
+		return entity;
+	}
+
+	private static MultipartEntity addAttachmentsToMultipartEntity(MultipartEntity entity, Collection<CraryRestClientAttachment> attachments) {
+		if (attachments != null) {
+			for (CraryRestClientAttachment attachment : attachments) {
+				entity.addPart(attachment.mName, new ByteArrayBody(attachment.mData, attachment.mMimeType, attachment.mFileName));
+			}
+		}
 		return entity;
 	}
 

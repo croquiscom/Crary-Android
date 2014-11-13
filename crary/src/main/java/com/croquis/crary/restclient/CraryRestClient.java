@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -111,6 +112,10 @@ public class CraryRestClient {
 		mImplApache.post(getBaseUrl() + path, parameters, complete, JSONObject.class);
 	}
 
+	public void post(String path, JSONObject parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<JSONObject> complete) {
+		mImplApache.post(getBaseUrl() + path, parameters, attachments, complete, JSONObject.class);
+	}
+
 	public void postGzip(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
 		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, JSONObject.class);
 	}
@@ -125,6 +130,10 @@ public class CraryRestClient {
 
 	public void put(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
 		mImplApache.put(getBaseUrl() + path, parameters, complete, JSONObject.class);
+	}
+
+	public void put(String path, JSONObject parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<JSONObject> complete) {
+		mImplApache.put(getBaseUrl() + path, parameters, attachments, complete, JSONObject.class);
 	}
 
 	public void put(String path, HttpEntity httpEntity, OnRequestComplete<JSONObject> complete) {
@@ -166,11 +175,23 @@ public class CraryRestClient {
 		post(path, parameters, (Type) klass, complete);
 	}
 
+	public <T> void post(String path, Object parameters, Collection<CraryRestClientAttachment> attachments, Class<T> klass, OnRequestComplete<T> complete) {
+		post(path, parameters, attachments, (Type) klass, complete);
+	}
+
 	public <T> void post(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
 			mImplJavaNet.post(getBaseUrl() + path, parameters, complete, type);
 		} else {
 			mImplApache.post(getBaseUrl() + path, parameters, complete, type);
+		}
+	}
+
+	public <T> void post(String path, Object parameters, Collection<CraryRestClientAttachment> attachments, Type type, OnRequestComplete<T> complete) {
+		if (mImplJavaNet != null) {
+			mImplJavaNet.post(getBaseUrl() + path, parameters, attachments, complete, type);
+		} else {
+			mImplApache.post(getBaseUrl() + path, parameters, attachments, complete, type);
 		}
 	}
 
@@ -190,11 +211,23 @@ public class CraryRestClient {
 		put(path, parameters, (Type) klass, complete);
 	}
 
+	public <T> void put(String path, Object parameters, Collection<CraryRestClientAttachment> attachments, Class<T> klass, OnRequestComplete<T> complete) {
+		put(path, parameters, attachments, (Type) klass, complete);
+	}
+
 	public <T> void put(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
 			mImplJavaNet.put(getBaseUrl() + path, parameters, complete, type);
 		} else {
 			mImplApache.put(getBaseUrl() + path, parameters, complete, type);
+		}
+	}
+
+	public <T> void put(String path, Object parameters, Collection<CraryRestClientAttachment> attachments, Type type, OnRequestComplete<T> complete) {
+		if (mImplJavaNet != null) {
+			mImplJavaNet.put(getBaseUrl() + path, parameters, attachments, complete, type);
+		} else {
+			mImplApache.put(getBaseUrl() + path, parameters, attachments, complete, type);
 		}
 	}
 

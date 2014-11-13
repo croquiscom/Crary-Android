@@ -21,6 +21,7 @@ import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Collection;
 
 @TargetApi(14)
 public class CraryRestClientImplJavaNet {
@@ -45,11 +46,19 @@ public class CraryRestClientImplJavaNet {
 		request(url, "POST", parameters, false, complete, type);
 	}
 
+	public <T> void post(String url, Object parameters, Collection<CraryRestClientAttachment> attachments, CraryRestClient.OnRequestComplete<T> complete, Type type) {
+		request(url, "POST", parameters, false, complete, type);
+	}
+
 	public <T> void postGzip(String url, Object parameters, CraryRestClient.OnRequestComplete<T> complete, Type type) {
 		request(url, "POST", parameters, true, complete, type);
 	}
 
 	public <T> void put(String url, Object parameters, CraryRestClient.OnRequestComplete<T> complete, Type type) {
+		request(url, "PUT", parameters, false, complete, type);
+	}
+
+	public <T> void put(String url, Object parameters, Collection<CraryRestClientAttachment> attachments, CraryRestClient.OnRequestComplete<T> complete, Type type) {
 		request(url, "PUT", parameters, false, complete, type);
 	}
 

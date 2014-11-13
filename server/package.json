@@ -1,6 +1,7 @@
 {
   "name": "CraryTestServer",
   "dependencies": {
+    "connect-multiparty": "~1.2.4",
     "crary": "git+https://github.com/croquiscom/Crary-Node.git"
   }
 }

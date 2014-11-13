@@ -5,12 +5,16 @@ import android.test.suitebuilder.annotation.LargeTest;
 
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
+import com.croquis.crary.restclient.gson.JsonObjectBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 public class CraryRestClientGsonTest extends AndroidTestCase {
@@ -62,6 +66,25 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		int userId;
 		String fullName;
 		String mPhoneNumber;
+	}
+
+	private static class PostAttachmentsResult {
+		String a;
+		int b;
+		Sub c;
+		File f1;
+		File f2;
+
+		private static class Sub {
+			String d;
+			int e;
+		}
+
+		private static class File {
+			String fileName;
+			int size;
+			String type;
+		}
 	}
 
 	@LargeTest
@@ -302,6 +325,54 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 				assertEquals(123, result.userId);
 				assertEquals("Crary", result.fullName);
 				assertEquals("1-234-5678", result.mPhoneNumber);
+				countDownLatch.countDown();
+			}
+		});
+
+		countDownLatch.await();
+	}
+
+	@LargeTest
+	public void testPostAttachments() throws JSONException, InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+		final CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(mBaseUrl);
+
+		JsonObject parameters = new JsonObjectBuilder()
+				.add("a", "message")
+				.add("b", 5)
+				.add("c", new JsonObjectBuilder()
+						.add("d", "hello")
+						.add("e", 9)
+						.build())
+				.build();
+		CraryRestClientAttachment[] attachments = {
+				CraryRestClientAttachment.byteArray("f1", new byte[]{1, 2, 3}, "image/jpeg", "photo.jpg"),
+				CraryRestClientAttachment.byteArray("f2", new byte[]{4, 5, 6, 7, 8, 9, 10}, "audio/mpeg", "sound.mp3"),
+		};
+
+		restClient.post("echo", parameters, Arrays.asList(attachments), PostAttachmentsResult.class, new OnRequestComplete<PostAttachmentsResult>() {
+			@Override
+			public void onComplete(RestError error, PostAttachmentsResult result) {
+				assertNull(error);
+
+				assertEquals("message", result.a);
+				assertEquals(5, result.b);
+
+				assertNotNull(result.c);
+				assertEquals("hello", result.c.d);
+				assertEquals(9, result.c.e);
+
+				assertNotNull(result.f1);
+				assertEquals("photo.jpg", result.f1.fileName);
+				assertEquals(3, result.f1.size);
+				assertEquals("image/jpeg", result.f1.type);
+
+				assertNotNull(result.f2);
+				assertEquals("sound.mp3", result.f2.fileName);
+				assertEquals(7, result.f2.size);
+				assertEquals("audio/mpeg", result.f2.type);
 				countDownLatch.countDown();
 			}
 		});
