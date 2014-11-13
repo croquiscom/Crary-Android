@@ -5,16 +5,15 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import com.croquis.crary.OnTaskComplete;
+import com.croquis.crary.restclient.gson.GsonQueryConverter;
+import com.croquis.crary.restclient.json.JsonQueryConverter;
 import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.apache.http.HttpEntity;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
@@ -23,8 +22,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -97,15 +94,15 @@ public class CraryRestClient {
 	// Methods for org.json
 
 	public void getUrl(String url, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.getNoCookie(url + convertParametersToQuery(parameters), complete, JSONObject.class);
+		mImplApache.getNoCookie(url + JsonQueryConverter.convert(parameters), complete, JSONObject.class);
 	}
 
 	public void get(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, JSONObject.class);
+		mImplApache.get(getBaseUrl() + path + JsonQueryConverter.convert(parameters), complete, JSONObject.class);
 	}
 
 	public void getList(String path, JSONObject parameters, OnRequestComplete<JSONArray> complete) {
-		mImplApache.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, JSONArray.class);
+		mImplApache.get(getBaseUrl() + path + JsonQueryConverter.convert(parameters), complete, JSONArray.class);
 	}
 
 	public void post(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
@@ -141,7 +138,7 @@ public class CraryRestClient {
 	}
 
 	public void delete(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.delete(getBaseUrl() + path + convertParametersToQuery(parameters), complete, JSONObject.class);
+		mImplApache.delete(getBaseUrl() + path + JsonQueryConverter.convert(parameters), complete, JSONObject.class);
 	}
 
 	//============================================================
@@ -153,9 +150,9 @@ public class CraryRestClient {
 
 	public <T> void get(String path, JsonObject parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+			mImplJavaNet.get(getBaseUrl() + path + GsonQueryConverter.convert(parameters), complete, type);
 		} else {
-			mImplApache.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+			mImplApache.get(getBaseUrl() + path + GsonQueryConverter.convert(parameters), complete, type);
 		}
 	}
 
@@ -165,9 +162,9 @@ public class CraryRestClient {
 
 	public <T> void get(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+			mImplJavaNet.get(getBaseUrl() + path + GsonQueryConverter.convert(parameters, mGson), complete, type);
 		} else {
-			mImplApache.get(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+			mImplApache.get(getBaseUrl() + path + GsonQueryConverter.convert(parameters, mGson), complete, type);
 		}
 	}
 
@@ -237,79 +234,14 @@ public class CraryRestClient {
 
 	public <T> void delete(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.delete(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+			mImplJavaNet.delete(getBaseUrl() + path + GsonQueryConverter.convert(parameters, mGson), complete, type);
 		} else {
-			mImplApache.delete(getBaseUrl() + path + convertParametersToQuery(parameters), complete, type);
+			mImplApache.delete(getBaseUrl() + path + GsonQueryConverter.convert(parameters, mGson), complete, type);
 		}
 	}
 
 	//============================================================
 	// Private Methods
-
-	private String convertParametersToQuery(JSONObject parameters) {
-		if (parameters == null) {
-			return "";
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("?");
-		try {
-			@SuppressWarnings("unchecked")
-			Iterator<String> jsonIter = parameters.keys();
-			while (jsonIter.hasNext()) {
-				String key = jsonIter.next();
-				sb.append(key).append("=").append(parameters.get(key)).append("&");
-			}
-		} catch (JSONException e) {
-		}
-		sb.deleteCharAt(sb.length() - 1);
-		return sb.toString().replace(' ', '+');
-	}
-
-	private String convertParametersToQuery(JsonObject parameters) {
-		if (parameters == null) {
-			return "";
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("?");
-		convertParametersToQuery(sb, "", parameters);
-		sb.deleteCharAt(sb.length() - 1);
-		return sb.toString().replace(' ', '+');
-	}
-
-	private void convertParametersToQuery(StringBuilder sb, String path, JsonElement parameters) {
-		if (parameters.isJsonObject()) {
-			convertParametersToQuery(sb, path, (JsonObject) parameters);
-		} else if (parameters.isJsonArray()) {
-			convertParametersToQuery(sb, path, (JsonArray) parameters);
-		} else if (parameters.isJsonPrimitive()) {
-			sb.append(path).append("=").append(parameters.getAsString()).append("&");
-		} else {
-			// null
-			sb.append(path).append("=").append("&");
-		}
-	}
-
-	private void convertParametersToQuery(StringBuilder sb, String path, JsonObject parameters) {
-		for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
-			String subpath = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
-			convertParametersToQuery(sb, subpath, entry.getValue());
-		}
-	}
-
-	private void convertParametersToQuery(StringBuilder sb, String path, JsonArray parameters) {
-		for (int i = 0; i < parameters.size(); i++) {
-			String subpath = path + "[" + i + "]";
-			convertParametersToQuery(sb, subpath, parameters.get(i));
-		}
-	}
-
-	private String convertParametersToQuery(Object parameters) {
-		JsonElement json = mGson.toJsonTree(parameters);
-		if (json.isJsonObject()) {
-			return convertParametersToQuery((JsonObject) json);
-		}
-		return "";
-	}
 
 	static byte[] gzipDeflate(byte[] data) {
 		byte[] gzipped = new byte[0];
