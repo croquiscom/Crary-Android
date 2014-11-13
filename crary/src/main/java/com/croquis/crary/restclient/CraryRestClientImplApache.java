@@ -123,7 +123,7 @@ public class CraryRestClientImplApache {
 	}
 
 	public <T> void post(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpPost(url), convertParametersToEntity(parameters), complete, c, true);
+		request(new HttpPost(url), parameters != null ? makeHttpEntity(parameters.toString()) : null, complete, c, true);
 	}
 
 	public <T> void post(String url, JSONObject parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<T> complete, Class<T> c) {
@@ -131,7 +131,7 @@ public class CraryRestClientImplApache {
 	}
 
 	public <T> void postGzip(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, c, true);
+		request(new HttpPost(url), parameters != null ? makeGzipHttpEntity(parameters.toString()) : null, complete, c, true);
 	}
 
 	public <T> void post(String url, HttpEntity entity, OnRequestComplete<T> complete, Class<T> c) {
@@ -139,7 +139,7 @@ public class CraryRestClientImplApache {
 	}
 
 	public <T> void put(String url, JSONObject parameters, OnRequestComplete<T> complete, Class<T> c) {
-		request(new HttpPut(url), convertParametersToEntity(parameters), complete, c, true);
+		request(new HttpPut(url), parameters != null ? makeHttpEntity(parameters.toString()) : null, complete, c, true);
 	}
 
 	public <T> void put(String url, JSONObject parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<T> complete, Class<T> c) {
@@ -155,7 +155,7 @@ public class CraryRestClientImplApache {
 	}
 
 	public <T> void post(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
-		request(new HttpPost(url), convertParametersToEntity(parameters), complete, type, true);
+		request(new HttpPost(url), parameters != null ? makeHttpEntity(mGson.toJson(parameters)) : null, complete, type, true);
 	}
 
 	public <T> void post(String url, Object parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<T> complete, Type type) {
@@ -163,11 +163,11 @@ public class CraryRestClientImplApache {
 	}
 
 	public <T> void postGzip(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
-		request(new HttpPost(url), convertParametersToGzipEntity(parameters), complete, type, true);
+		request(new HttpPost(url), parameters != null ? makeGzipHttpEntity(mGson.toJson(parameters)) : null, complete, type, true);
 	}
 
 	public <T> void put(String url, Object parameters, OnRequestComplete<T> complete, Type type) {
-		request(new HttpPut(url), convertParametersToEntity(parameters), complete, type, true);
+		request(new HttpPut(url), parameters != null ? makeHttpEntity(mGson.toJson(parameters)) : null, complete, type, true);
 	}
 
 	public <T> void put(String url, Object parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<T> complete, Type type) {
@@ -211,11 +211,11 @@ public class CraryRestClientImplApache {
 		}).start();
 	}
 
-	private HttpEntity convertParametersToEntity(JSONObject parameters) {
+	private static HttpEntity makeHttpEntity(String json) {
 		StringEntity entity = null;
-		if (parameters != null) {
+		if (json != null) {
 			try {
-				entity = new StringEntity(parameters.toString(), HTTP.UTF_8);
+				entity = new StringEntity(json, HTTP.UTF_8);
 				entity.setContentType("application/json");
 			} catch (UnsupportedEncodingException e) {
 			}
@@ -223,27 +223,8 @@ public class CraryRestClientImplApache {
 		return entity;
 	}
 
-	private HttpEntity convertParametersToEntity(Object parameters) {
-		StringEntity entity = null;
-		if (parameters != null) {
-			try {
-				entity = new StringEntity(mGson.toJson(parameters), HTTP.UTF_8);
-				entity.setContentType("application/json");
-			} catch (UnsupportedEncodingException e) {
-			}
-		}
-		return entity;
-	}
-
-	private HttpEntity convertParametersToGzipEntity(JSONObject parameters) {
-		ByteArrayEntity entity = new ByteArrayEntity(CraryRestClient.gzipDeflate(parameters.toString().getBytes()));
-		entity.setContentEncoding("gzip");
-		entity.setContentType("application/json");
-		return entity;
-	}
-
-	private HttpEntity convertParametersToGzipEntity(Object parameters) {
-		ByteArrayEntity entity = new ByteArrayEntity(CraryRestClient.gzipDeflate(mGson.toJson(parameters).getBytes()));
+	private static HttpEntity makeGzipHttpEntity(String json) {
+		ByteArrayEntity entity = new ByteArrayEntity(CraryRestClient.gzipDeflate(json.getBytes()));
 		entity.setContentEncoding("gzip");
 		entity.setContentType("application/json");
 		return entity;
@@ -259,7 +240,6 @@ public class CraryRestClientImplApache {
 	}
 
 	private Header getCookieHeader() {
-
 		List<Cookie> cookieList = new ArrayList<Cookie>();
 		cookieList.add(new BasicClientCookie(SESSION_ID, mSessionId));
 		CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
