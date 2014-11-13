@@ -5,9 +5,12 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.croquis.crary.restclient.gson.GsonMimeCraftMultipartConverter;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.squareup.mimecraft.Multipart;
+import com.squareup.mimecraft.Part;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Map;
 
 @TargetApi(14)
 public class CraryRestClientImplJavaNet {
@@ -39,34 +43,34 @@ public class CraryRestClientImplJavaNet {
 	}
 
 	public <T> void get(String url, CraryRestClient.OnRequestComplete<T> complete, Type type) {
-		request(url, "GET", null, false, complete, type);
+		request(url, "GET", null, null, false, complete, type);
 	}
 
 	public <T> void post(String url, Object parameters, CraryRestClient.OnRequestComplete<T> complete, Type type) {
-		request(url, "POST", parameters, false, complete, type);
+		request(url, "POST", parameters, null, false, complete, type);
 	}
 
 	public <T> void post(String url, Object parameters, Collection<CraryRestClientAttachment> attachments, CraryRestClient.OnRequestComplete<T> complete, Type type) {
-		request(url, "POST", parameters, false, complete, type);
+		request(url, "POST", parameters, attachments, false, complete, type);
 	}
 
 	public <T> void postGzip(String url, Object parameters, CraryRestClient.OnRequestComplete<T> complete, Type type) {
-		request(url, "POST", parameters, true, complete, type);
+		request(url, "POST", parameters, null, true, complete, type);
 	}
 
 	public <T> void put(String url, Object parameters, CraryRestClient.OnRequestComplete<T> complete, Type type) {
-		request(url, "PUT", parameters, false, complete, type);
+		request(url, "PUT", parameters, null, false, complete, type);
 	}
 
 	public <T> void put(String url, Object parameters, Collection<CraryRestClientAttachment> attachments, CraryRestClient.OnRequestComplete<T> complete, Type type) {
-		request(url, "PUT", parameters, false, complete, type);
+		request(url, "PUT", parameters, attachments, false, complete, type);
 	}
 
 	public <T> void delete(String url, CraryRestClient.OnRequestComplete<T> complete, Type type) {
-		request(url, "DELETE", null, false, complete, type);
+		request(url, "DELETE", null, null, false, complete, type);
 	}
 
-	private <T> void request(final String url, final String method, final Object parameters, final boolean gzip, final CraryRestClient.OnRequestComplete<T> complete, final Type type) {
+	private <T> void request(final String url, final String method, final Object parameters, final Collection<CraryRestClientAttachment> attachments, final boolean gzip, final CraryRestClient.OnRequestComplete<T> complete, final Type type) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -90,7 +94,15 @@ public class CraryRestClientImplJavaNet {
 						urlConnection.setRequestProperty("User-Agent", mUserAgent);
 					}
 					urlConnection.setRequestMethod(method);
-					if (parameters != null) {
+					if (attachments != null) {
+						urlConnection.setDoOutput(true);
+						Multipart multipart = convertMultipart(parameters, attachments);
+						Map<String, String> headers = multipart.getHeaders();
+						for (String field : headers.keySet()) {
+							urlConnection.setRequestProperty(field, headers.get(field));
+						}
+						multipart.writeBodyTo(urlConnection.getOutputStream());
+					} else if (parameters != null) {
 						urlConnection.setDoOutput(true);
 						urlConnection.setRequestProperty("Content-Type", "application/json");
 						if (gzip) {
@@ -121,6 +133,18 @@ public class CraryRestClientImplJavaNet {
 				processResponse(urlConnection, complete, type);
 			}
 		}).start();
+	}
+
+	private Multipart convertMultipart(Object parameters, Collection<CraryRestClientAttachment> attachments) {
+		Multipart.Builder builder = GsonMimeCraftMultipartConverter.convert(parameters, mGson);
+		for (CraryRestClientAttachment attachment : attachments) {
+			builder.addPart(new Part.Builder()
+					.body(attachment.mData)
+					.contentType(attachment.mMimeType)
+					.contentDisposition("form-data; name=\"" + attachment.mName + "\"; filename=\"" + attachment.mFileName + "\"")
+					.build());
+		}
+		return builder.build();
 	}
 
 	private <T> void processResponse(HttpURLConnection urlConnection, CraryRestClient.OnRequestComplete<T> complete, Type type) {
