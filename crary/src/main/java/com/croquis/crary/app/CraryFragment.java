@@ -1,5 +1,6 @@
 package com.croquis.crary.app;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.util.Log;
 
@@ -7,6 +8,7 @@ import rx.Observable;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
+@TargetApi(11)
 public class CraryFragment extends Fragment {
 	private CompositeSubscription mSubscriptions = new CompositeSubscription();
 

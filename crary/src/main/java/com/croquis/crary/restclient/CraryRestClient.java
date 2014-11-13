@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -296,7 +297,7 @@ public class CraryRestClient {
 				}
 				spans.append(character);
 			}
-			return spans.toString().toLowerCase();
+			return spans.toString().toLowerCase(Locale.US);
 		}
 	}
 }
