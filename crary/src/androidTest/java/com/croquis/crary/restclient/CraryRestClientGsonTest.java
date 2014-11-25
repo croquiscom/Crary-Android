@@ -11,10 +11,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONException;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 public class CraryRestClientGsonTest extends AndroidTestCase {
@@ -85,6 +86,14 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 			int size;
 			String type;
 		}
+	}
+
+	private static class DateRequest {
+		Date message;
+	}
+
+	private static class DateResult {
+		Date d;
 	}
 
 	@LargeTest
@@ -333,7 +342,7 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 	}
 
 	@LargeTest
-	public void testPostAttachments() throws JSONException, InterruptedException {
+	public void testPostAttachments() throws InterruptedException {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		final CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
@@ -378,5 +387,42 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		});
 
 		countDownLatch.await();
+	}
+
+	@LargeTest
+	public void testDate() throws InterruptedException, ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		final CountDownLatch countDownLatch = new CountDownLatch(4);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(mBaseUrl);
+
+		subTestDate(restClient, countDownLatch, sdf, "2014-11-25T10:30:05.010Z", "2014-11-25T10:30:05.010+0000");
+		subTestDate(restClient, countDownLatch, sdf, "2014/11/25 10:30:05", "2014-11-25T10:30:05.000+0000");
+		subTestDate(restClient, countDownLatch, sdf, "2014/11/25 10:30:05:010", "2014-11-25T10:30:05.010+0000");
+
+		DateRequest parameters = new DateRequest();
+		parameters.message = new Date(Date.UTC(114, 10, 25, 10, 30, 05) + 10);
+		restClient.post("ping", parameters, PingResult.class, new OnRequestComplete<PingResult>() {
+			@Override
+			public void onComplete(RestError error, PingResult result) {
+				assertNull(error);
+				assertEquals("2014-11-25T10:30:05.010Z", result.response);
+				countDownLatch.countDown();
+			}
+		});
+
+		countDownLatch.await();
+	}
+
+	private void subTestDate(CraryRestClient restClient, final CountDownLatch countDownLatch, final SimpleDateFormat sdf, String send, final String expected) {
+		restClient.post("echo", JsonObjectBuilder.build("d", send), DateResult.class, new OnRequestComplete<DateResult>() {
+			@Override
+			public void onComplete(RestError error, DateResult result) {
+				assertNull(error);
+				assertEquals(expected, sdf.format(result.d));
+				countDownLatch.countDown();
+			}
+		});
 	}
 }
