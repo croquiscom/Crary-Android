@@ -29,12 +29,18 @@ import java.util.zip.GZIPOutputStream;
 public class CraryRestClient {
 	public static class RestError extends Throwable {
 		private static final long serialVersionUID = 1L;
-		public String error;
-		public String description;
+		public final String error;
+		public final String description;
 
 		public RestError(String error, String description) {
 			this.error = error;
 			this.description = description;
+		}
+
+		public RestError(Throwable cause) {
+			super(cause);
+			this.error = cause.getClass().getName();
+			this.description = "";
 		}
 
 		public static final RestError NETWORK_ERROR = new RestError("network error", "");

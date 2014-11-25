@@ -9,6 +9,7 @@ import com.croquis.crary.restclient.gson.GsonMimeCraftMultipartConverter;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.squareup.mimecraft.Multipart;
 import com.squareup.mimecraft.Part;
 
@@ -157,6 +158,12 @@ public class CraryRestClientImplJavaNet {
 		} catch (IOException e) {
 			if (complete != null) {
 				complete.onComplete(CraryRestClient.RestError.UNKNOWN_ERROR, null);
+			}
+			urlConnection.disconnect();
+			return;
+		} catch (JsonParseException e) {
+			if (complete != null) {
+				complete.onComplete(new CraryRestClient.RestError(e), null);
 			}
 			urlConnection.disconnect();
 			return;

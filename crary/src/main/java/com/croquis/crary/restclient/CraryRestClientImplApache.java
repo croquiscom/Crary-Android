@@ -11,6 +11,7 @@ import com.croquis.crary.restclient.gson.GsonMultipartEntityConverter;
 import com.croquis.crary.restclient.json.JsonMultipartEntityConverter;
 import com.croquis.crary.util.JSONHelper;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -270,7 +271,12 @@ public class CraryRestClientImplApache {
 				return;
 			}
 		} else {
-			json = mGson.fromJson(result, type);
+			try {
+				json = mGson.fromJson(result, type);
+			} catch (JsonParseException e) {
+				callOnComplete(complete, new RestError(e), null);
+				return;
+			}
 		}
 		RestError error = getResponseError(response, json);
 		if (error != null) {
