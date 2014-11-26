@@ -1,23 +1,14 @@
 package com.croquis.crary.restclient.json;
 
+import com.croquis.crary.util.Iso9601DateFormat;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 public class JSONObjectBuilder {
 	private JSONObject mJSONObject;
-
-	private static DateFormat mFormat;
-
-	static {
-		mFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-		mFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-	}
 
 	public static JSONObject build(String name, boolean value) {
 		return new JSONObjectBuilder().add(name, value).build();
@@ -82,9 +73,7 @@ public class JSONObjectBuilder {
 	public JSONObjectBuilder add(String name, Date value) {
 		try {
 			if (value != null) {
-				synchronized (mFormat) {
-					mJSONObject.put(name, mFormat.format(value));
-				}
+				mJSONObject.put(name, Iso9601DateFormat.format(value));
 			} else {
 				mJSONObject.put(name, JSONObject.NULL);
 			}

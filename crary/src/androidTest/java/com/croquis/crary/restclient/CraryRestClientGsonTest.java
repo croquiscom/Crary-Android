@@ -6,13 +6,13 @@ import android.test.suitebuilder.annotation.LargeTest;
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
 import com.croquis.crary.restclient.gson.JsonObjectBuilder;
+import com.croquis.crary.util.Iso9601DateFormat;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -391,15 +391,14 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 
 	@LargeTest
 	public void testDate() throws InterruptedException, ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 		final CountDownLatch countDownLatch = new CountDownLatch(4);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
 
-		subTestDate(restClient, countDownLatch, sdf, "2014-11-25T10:30:05.010Z", "2014-11-25T10:30:05.010+0000");
-		subTestDate(restClient, countDownLatch, sdf, "2014/11/25 10:30:05", "2014-11-25T10:30:05.000+0000");
-		subTestDate(restClient, countDownLatch, sdf, "2014/11/25 10:30:05:010", "2014-11-25T10:30:05.010+0000");
+		subTestDate(restClient, countDownLatch, "2014-11-25T10:30:05.010Z", "2014-11-25T10:30:05.010Z");
+		subTestDate(restClient, countDownLatch, "2014/11/25 10:30:05", "2014-11-25T10:30:05.000Z");
+		subTestDate(restClient, countDownLatch, "2014/11/25 10:30:05:010", "2014-11-25T10:30:05.010Z");
 
 		DateRequest parameters = new DateRequest();
 		parameters.message = new Date(Date.UTC(114, 10, 25, 10, 30, 05) + 10);
@@ -415,12 +414,12 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 		countDownLatch.await();
 	}
 
-	private void subTestDate(CraryRestClient restClient, final CountDownLatch countDownLatch, final SimpleDateFormat sdf, String send, final String expected) {
+	private void subTestDate(CraryRestClient restClient, final CountDownLatch countDownLatch, String send, final String expected) {
 		restClient.post("echo", JsonObjectBuilder.build("d", send), DateResult.class, new OnRequestComplete<DateResult>() {
 			@Override
 			public void onComplete(RestError error, DateResult result) {
 				assertNull(error);
-				assertEquals(expected, sdf.format(result.d));
+				assertEquals(expected, Iso9601DateFormat.format(result.d));
 				countDownLatch.countDown();
 			}
 		});

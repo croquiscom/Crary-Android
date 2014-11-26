@@ -1,5 +1,6 @@
 package com.croquis.crary.restclient.gson;
 
+import com.croquis.crary.util.Iso9601DateFormat;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -22,21 +23,16 @@ public class CraryDateTypeAdapter implements JsonSerializer<Date>, JsonDeseriali
 	private final DateFormat mFormats[];
 
 	public CraryDateTypeAdapter() {
-		mFormats = new DateFormat[3];
-		// "'Z'" does not mean a time zone, is just a character Z.
-		mFormats[0] = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+		mFormats = new DateFormat[2];
+		mFormats[0] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS", Locale.US);
 		mFormats[0].setTimeZone(TimeZone.getTimeZone("GMT"));
-		mFormats[1] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS", Locale.US);
+		mFormats[1] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
 		mFormats[1].setTimeZone(TimeZone.getTimeZone("GMT"));
-		mFormats[2] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
-		mFormats[2].setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 
 	@Override
 	public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-		synchronized (mFormats[0]) {
-			return new JsonPrimitive(mFormats[0].format(src));
-		}
+		return new JsonPrimitive(Iso9601DateFormat.format(src));
 	}
 
 	@Override
@@ -57,6 +53,10 @@ public class CraryDateTypeAdapter implements JsonSerializer<Date>, JsonDeseriali
 	}
 
 	private Date parseDate(String str) {
+		Date date = Iso9601DateFormat.parse(str);
+		if (date != null) {
+			return date;
+		}
 		for (DateFormat format : mFormats) {
 			synchronized (format) {
 				try {
