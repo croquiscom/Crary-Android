@@ -1,6 +1,6 @@
 package com.croquis.crary.restclient.gson;
 
-import com.croquis.crary.util.Iso9601DateFormat;
+import com.croquis.crary.util.CraryIso9601DateFormat;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -56,7 +56,7 @@ public class JsonObjectBuilder {
 
 	public JsonObjectBuilder add(String name, Date value) {
 		if (value != null) {
-			mJsonObject.addProperty(name, Iso9601DateFormat.format(value));
+			mJsonObject.addProperty(name, CraryIso9601DateFormat.format(value));
 		} else {
 			mJsonObject.add(name, JsonNull.INSTANCE);
 		}

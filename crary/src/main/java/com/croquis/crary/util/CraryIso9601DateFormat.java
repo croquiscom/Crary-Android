@@ -10,7 +10,7 @@ import java.util.TimeZone;
 /**
  * http://en.wikipedia.org/wiki/ISO_8601
  */
-public class Iso9601DateFormat {
+public class CraryIso9601DateFormat {
 	private static DateFormat mFormat;
 
 	static {

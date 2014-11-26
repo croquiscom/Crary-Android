@@ -6,7 +6,7 @@ import android.test.suitebuilder.annotation.LargeTest;
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
 import com.croquis.crary.restclient.gson.JsonObjectBuilder;
-import com.croquis.crary.util.Iso9601DateFormat;
+import com.croquis.crary.util.CraryIso9601DateFormat;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -419,7 +419,7 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 			@Override
 			public void onComplete(RestError error, DateResult result) {
 				assertNull(error);
-				assertEquals(expected, Iso9601DateFormat.format(result.d));
+				assertEquals(expected, CraryIso9601DateFormat.format(result.d));
 				countDownLatch.countDown();
 			}
 		});

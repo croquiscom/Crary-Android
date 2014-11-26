@@ -1,6 +1,6 @@
 package com.croquis.crary.restclient.gson;
 
-import com.croquis.crary.util.Iso9601DateFormat;
+import com.croquis.crary.util.CraryIso9601DateFormat;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -32,7 +32,7 @@ public class CraryDateTypeAdapter implements JsonSerializer<Date>, JsonDeseriali
 
 	@Override
 	public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-		return new JsonPrimitive(Iso9601DateFormat.format(src));
+		return new JsonPrimitive(CraryIso9601DateFormat.format(src));
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class CraryDateTypeAdapter implements JsonSerializer<Date>, JsonDeseriali
 	}
 
 	private Date parseDate(String str) {
-		Date date = Iso9601DateFormat.parse(str);
+		Date date = CraryIso9601DateFormat.parse(str);
 		if (date != null) {
 			return date;
 		}

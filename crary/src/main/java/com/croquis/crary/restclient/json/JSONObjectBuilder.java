@@ -1,6 +1,6 @@
 package com.croquis.crary.restclient.json;
 
-import com.croquis.crary.util.Iso9601DateFormat;
+import com.croquis.crary.util.CraryIso9601DateFormat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +73,7 @@ public class JSONObjectBuilder {
 	public JSONObjectBuilder add(String name, Date value) {
 		try {
 			if (value != null) {
-				mJSONObject.put(name, Iso9601DateFormat.format(value));
+				mJSONObject.put(name, CraryIso9601DateFormat.format(value));
 			} else {
 				mJSONObject.put(name, JSONObject.NULL);
 			}
