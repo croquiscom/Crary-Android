@@ -163,7 +163,7 @@ public class CraryRestClientImplJavaNet {
 			return;
 		} catch (JsonParseException e) {
 			if (complete != null) {
-				complete.onComplete(new CraryRestClient.RestError(e), null);
+				complete.onComplete(new CraryRestClient.RestError(400, e), null);
 			}
 			urlConnection.disconnect();
 			return;
@@ -188,7 +188,7 @@ public class CraryRestClientImplJavaNet {
 		String error = errorObj != null && errorObj.isJsonPrimitive() ? errorObj.getAsString() : null;
 		JsonElement descriptionObj = json.get("description");
 		String description = descriptionObj != null && descriptionObj.isJsonPrimitive() ? descriptionObj.getAsString() : null;
-		return new CraryRestClient.RestError(error, description);
+		return new CraryRestClient.RestError(statusCode, error, description);
 	}
 
 	private <T> void callOnComplete(final CraryRestClient.OnRequestComplete<T> complete, final CraryRestClient.RestError error, final T result) {

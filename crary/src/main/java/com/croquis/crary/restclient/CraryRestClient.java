@@ -30,23 +30,26 @@ import java.util.zip.GZIPOutputStream;
 public class CraryRestClient {
 	public static class RestError extends Throwable {
 		private static final long serialVersionUID = 1L;
+		public final int code;
 		public final String error;
 		public final String description;
 
-		public RestError(String error, String description) {
+		public RestError(int code, String error, String description) {
+			this.code = code;
 			this.error = error;
 			this.description = description;
 		}
 
-		public RestError(Throwable cause) {
+		public RestError(int code, Throwable cause) {
 			super(cause);
+			this.code = code;
 			this.error = cause.getClass().getName();
 			this.description = "";
 		}
 
-		public static final RestError NETWORK_ERROR = new RestError("network error", "");
-		public static final RestError UNRECOGNIZABLE_RESULT = new RestError("unrecognizable result", "");
-		public static final RestError UNKNOWN_ERROR = new RestError("unknown error", "");
+		public static final RestError NETWORK_ERROR = new RestError(503, "network error", "");
+		public static final RestError UNRECOGNIZABLE_RESULT = new RestError(400, "unrecognizable result", "");
+		public static final RestError UNKNOWN_ERROR = new RestError(500, "unknown error", "");
 	}
 
 	public interface OnRequestComplete<T> extends OnTaskComplete<RestError, T> {

@@ -424,4 +424,36 @@ public class CraryRestClientGsonTest extends AndroidTestCase {
 			}
 		});
 	}
+
+	@LargeTest
+	public void testError() throws InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(mBaseUrl);
+		subTestError(restClient, countDownLatch,
+				new JsonObjectBuilder().add("error", "MyError").build(),
+				new RestError(400, "MyError", null));
+		subTestError(restClient, countDownLatch,
+				new JsonObjectBuilder().add("status", 405).add("error", "MyError").build(),
+				new RestError(405, "MyError", null));
+		subTestError(restClient, countDownLatch,
+				new JsonObjectBuilder().add("status", 405).add("error", "MyError").add("description", "Something wrong").build(),
+				new RestError(405, "MyError", "Something wrong"));
+
+		countDownLatch.await();
+	}
+
+	private void subTestError(CraryRestClient restClient, final CountDownLatch countDownLatch, JsonObject send, final RestError expected) {
+		restClient.get("error", send, JsonObject.class, new OnRequestComplete<JsonObject>() {
+			@Override
+			public void onComplete(RestError error, JsonObject result) {
+				assertNotNull(error);
+				assertEquals(expected.code, error.code);
+				assertEquals(expected.error, error.error);
+				assertEquals(expected.description, error.description);
+				countDownLatch.countDown();
+			}
+		});
+	}
 }

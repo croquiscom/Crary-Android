@@ -9,8 +9,9 @@ import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
 import com.croquis.crary.restclient.gson.GsonMultipartEntityConverter;
 import com.croquis.crary.restclient.json.JsonMultipartEntityConverter;
-import com.croquis.crary.util.JSONHelper;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import org.apache.http.Header;
@@ -51,6 +52,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -255,35 +257,50 @@ public class CraryRestClientImplApache {
 			return;
 		}
 
+		RestError error = getResponseError(response, result);
 		T json = null;
-		if (type == JSONObject.class) {
-			try {
-				json = (T) new JSONObject(result);
-			} catch (JSONException e) {
-				callOnComplete(complete, RestError.UNRECOGNIZABLE_RESULT, null);
-				return;
-			}
-		} else if (type == JSONArray.class) {
-			try {
-				json = (T) new JSONArray(result);
-			} catch (JSONException e) {
-				callOnComplete(complete, RestError.UNRECOGNIZABLE_RESULT, null);
-				return;
-			}
-		} else {
-			try {
-				json = mGson.fromJson(result, type);
-			} catch (JsonParseException e) {
-				callOnComplete(complete, new RestError(e), null);
-				return;
+		if (error == null) {
+			if (type == JSONObject.class) {
+				try {
+					json = (T) new JSONObject(result);
+				} catch (JSONException e) {
+					error = RestError.UNRECOGNIZABLE_RESULT;
+				}
+			} else if (type == JSONArray.class) {
+				try {
+					json = (T) new JSONArray(result);
+				} catch (JSONException e) {
+					error = RestError.UNRECOGNIZABLE_RESULT;
+				}
+			} else {
+				try {
+					json = mGson.fromJson(result, type);
+				} catch (JsonParseException e) {
+					error = new RestError(400, e);
+				}
 			}
 		}
-		RestError error = getResponseError(response, json);
 		if (error != null) {
 			callOnComplete(complete, error, null);
 		} else {
 			callOnComplete(complete, null, json);
 		}
+	}
+
+	private RestError getResponseError(HttpResponse response, String result) {
+		int statusCode = response != null ? response.getStatusLine().getStatusCode() : -1;
+		if (statusCode >= 200 && statusCode < 300) {
+			return null;
+		}
+		JsonObject json = mGson.fromJson(new StringReader(result), JsonObject.class);
+		if (json == null) {
+			return RestError.NETWORK_ERROR;
+		}
+		JsonElement errorObj = json.get("error");
+		String error = errorObj != null && errorObj.isJsonPrimitive() ? errorObj.getAsString() : null;
+		JsonElement descriptionObj = json.get("description");
+		String description = descriptionObj != null && descriptionObj.isJsonPrimitive() ? descriptionObj.getAsString() : null;
+		return new RestError(statusCode, error, description);
 	}
 
 	private String getResponseString(HttpResponse response) {
@@ -315,22 +332,6 @@ public class CraryRestClientImplApache {
 			}
 		}
 		return result;
-	}
-
-	private RestError getResponseError(HttpResponse response, Object json) {
-		int statusCode = response != null ? response.getStatusLine().getStatusCode() : -1;
-		if (statusCode >= 200 && statusCode < 300) {
-			return null;
-		}
-		if (json == null) {
-			return RestError.NETWORK_ERROR;
-		}
-		if (json instanceof JSONObject) {
-			String error = JSONHelper.getString((JSONObject) json, "error");
-			String description = JSONHelper.getString((JSONObject) json, "description");
-			return new RestError(error, description);
-		}
-		return RestError.UNKNOWN_ERROR;
 	}
 
 	private <T> void callOnComplete(final OnRequestComplete<T> complete, final RestError error, final T result) {
