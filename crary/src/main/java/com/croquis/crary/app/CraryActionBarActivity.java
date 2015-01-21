@@ -9,13 +9,13 @@ import rx.subscriptions.CompositeSubscription;
 
 public class CraryActionBarActivity extends ActionBarActivity {
 	@Override
-	public void onStart() {
+	protected void onStart() {
 		super.onStart();
 		((CraryApplication) getApplication()).activityStarted(this);
 	}
 
 	@Override
-	public void onStop() {
+	protected void onStop() {
 		super.onStop();
 		((CraryApplication) getApplication()).activityStopped(this);
 	}
