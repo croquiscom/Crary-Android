@@ -201,7 +201,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 
 	@LargeTest
 	public void testError() throws InterruptedException {
-		final CountDownLatch countDownLatch = new CountDownLatch(2);
+		final CountDownLatch countDownLatch = new CountDownLatch(3);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
 		restClient.setBaseUrl(mBaseUrl);
@@ -229,5 +229,31 @@ public class CraryRestClientTest extends AndroidTestCase {
 				countDownLatch.countDown();
 			}
 		});
+	}
+
+	@LargeTest
+	public void testUnrecognizableResult() throws InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(mBaseUrl);
+		restClient.get("plain", null, new OnRequestComplete<JSONObject>() {
+			@Override
+			public void onComplete(RestError error, JSONObject result) {
+				assertNotNull(error);
+				assertEquals(RestError.UNRECOGNIZABLE_RESULT, error);
+				countDownLatch.countDown();
+			}
+		});
+		restClient.get("plain", JSONObjectBuilder.build("status", 500), new OnRequestComplete<JSONObject>() {
+			@Override
+			public void onComplete(RestError error, JSONObject result) {
+				assertNotNull(error);
+				assertEquals(RestError.UNRECOGNIZABLE_RESULT, error);
+				countDownLatch.countDown();
+			}
+		});
+
+		countDownLatch.await();
 	}
 }

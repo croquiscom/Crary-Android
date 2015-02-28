@@ -220,7 +220,7 @@ public class CraryRestClientImplApache {
 			try {
 				entity = new StringEntity(json, HTTP.UTF_8);
 				entity.setContentType("application/json");
-			} catch (UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException ignored) {
 			}
 		}
 		return entity;
@@ -276,7 +276,7 @@ public class CraryRestClientImplApache {
 				try {
 					json = mGson.fromJson(result, type);
 				} catch (JsonParseException e) {
-					error = new RestError(400, e);
+					error = RestError.UNRECOGNIZABLE_RESULT;
 				}
 			}
 		}
@@ -292,7 +292,12 @@ public class CraryRestClientImplApache {
 		if (statusCode >= 200 && statusCode < 300) {
 			return null;
 		}
-		JsonObject json = mGson.fromJson(new StringReader(result), JsonObject.class);
+		JsonObject json;
+		try {
+			json = mGson.fromJson(new StringReader(result), JsonObject.class);
+		} catch (JsonParseException e) {
+			return RestError.UNRECOGNIZABLE_RESULT;
+		}
 		if (json == null) {
 			return RestError.NETWORK_ERROR;
 		}
@@ -328,7 +333,7 @@ public class CraryRestClientImplApache {
 				}
 				entity.consumeContent();
 				result = new String(data, charset);
-			} catch (IOException e) {
+			} catch (IOException ignored) {
 			}
 		}
 		return result;

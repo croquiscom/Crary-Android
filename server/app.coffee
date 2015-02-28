@@ -31,6 +31,10 @@ setupRouter = (router) ->
     .status req.query.status or 400
     .json error: req.query.error, description: req.query.description
 
+  router.get '/plain', (req, res) ->
+    res.status req.query.status or 200
+    .send 'Plain Text Result'
+
 app = crary.express.createApp
   project_root: __dirname
   log4js_config:
