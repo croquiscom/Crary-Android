@@ -154,7 +154,8 @@ public class CraryRestClientImplJavaNet {
 		try {
 			Reader reader = new InputStreamReader(urlConnection.getInputStream());
 			error = getResponseError(urlConnection.getResponseCode(), reader);
-			json = (T) mGson.fromJson(reader, type);
+			//noinspection unchecked
+			json = mGson.fromJson(reader, type);
 		} catch (IOException e) {
 			if (complete != null) {
 				complete.onComplete(CraryRestClient.RestError.UNKNOWN_ERROR, null);
