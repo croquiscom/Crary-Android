@@ -9,9 +9,18 @@ public class CraryInputDialog {
 		selectSingle(context, context.getResources().getStringArray(itemIds), listener);
 	}
 
+	public static void selectSingle(Context context, int itemIds, String title, DialogInterface.OnClickListener listener) {
+		selectSingle(context, context.getResources().getStringArray(itemIds), listener);
+	}
+
 	public static void selectSingle(Context context, String[] items, DialogInterface.OnClickListener listener) {
+		String title = Utils.getAppName(context);
+		selectSingle(context, items, title, listener);
+	}
+
+	public static void selectSingle(Context context, String[] items, String title, DialogInterface.OnClickListener listener) {
 		new AlertDialog.Builder(context)
-				.setTitle(Utils.getAppName(context))
+				.setTitle(title)
 				.setItems(items, listener)
 				.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 					@Override

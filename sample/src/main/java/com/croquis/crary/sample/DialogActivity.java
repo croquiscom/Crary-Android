@@ -46,7 +46,7 @@ public class DialogActivity extends CraryActionBarActivity {
 	public void onShowSelectItem(View view) {
 		final String[] items = {"foo", "bar", "baz"};
 
-		CraryInputDialog.selectSingle(this, items, new DialogInterface.OnClickListener() {
+		CraryInputDialog.selectSingle(this, items, "Select One", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int which) {
 				CraryMessageBox.alert(DialogActivity.this, items[which]);
