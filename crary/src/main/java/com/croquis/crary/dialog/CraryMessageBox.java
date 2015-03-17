@@ -31,13 +31,12 @@ public class CraryMessageBox {
 	}
 
 	public static void alert(Context context, String message, String title, OnClickListener done) {
-		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-		dialogBuilder.setTitle(title);
-		dialogBuilder.setMessage(message);
-		dialogBuilder.setCancelable(false);
-		dialogBuilder.setPositiveButton(context.getString(R.string.OK), done);
-
-		dialogBuilder.show();
+		new AlertDialog.Builder(context)
+				.setTitle(title)
+				.setMessage(message)
+				.setCancelable(false)
+				.setPositiveButton(context.getString(R.string.OK), done)
+				.show();
 	}
 
 	public static void alert(Context context, int messageId) {
@@ -62,14 +61,13 @@ public class CraryMessageBox {
 	}
 
 	public static void confirm(Context context, String message, String title, String yes, String no, OnClickListener done) {
-		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-		dialogBuilder.setTitle(title);
-		dialogBuilder.setMessage(message);
-		dialogBuilder.setCancelable(false);
-		dialogBuilder.setPositiveButton(yes, done);
-		dialogBuilder.setNegativeButton(no, done);
-
-		dialogBuilder.show();
+		new AlertDialog.Builder(context)
+				.setTitle(title)
+				.setMessage(message)
+				.setCancelable(false)
+				.setPositiveButton(yes, done)
+				.setNegativeButton(no, done)
+				.show();
 	}
 
 	public static void confirmOkCancel(Context context, String message, OnClickListener done) {

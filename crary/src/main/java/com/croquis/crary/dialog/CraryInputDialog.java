@@ -10,15 +10,15 @@ public class CraryInputDialog {
 	}
 
 	public static void selectSingle(Context context, String[] items, DialogInterface.OnClickListener listener) {
-		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-		dialogBuilder.setTitle(Utils.getAppName(context));
-		dialogBuilder.setItems(items, listener);
-		dialogBuilder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
-		dialogBuilder.show();
+		new AlertDialog.Builder(context)
+				.setTitle(Utils.getAppName(context))
+				.setItems(items, listener)
+				.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				})
+				.show();
 	}
 }
