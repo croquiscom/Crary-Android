@@ -5,6 +5,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 public class GsonQueryConverter {
@@ -33,7 +35,12 @@ public class GsonQueryConverter {
 		} else if (object.isJsonArray()) {
 			addJsonArray(sb, path, (JsonArray) object);
 		} else if (object.isJsonPrimitive()) {
-			sb.append(path).append("=").append(object.getAsString()).append("&");
+			sb.append(path).append("=");
+			try {
+				sb.append(URLEncoder.encode(object.getAsString(), "UTF-8"));
+			} catch (UnsupportedEncodingException ignored) {
+			}
+			sb.append("&");
 		} else {
 			// null
 			sb.append(path).append("=").append("&");

@@ -129,6 +129,26 @@ public class CraryRestClientTest extends AndroidTestCase {
 	}
 
 	@LargeTest
+	public void testGetEscapeParameters() throws InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(TEST_BASE_URL);
+		JsonObject parameters = new JsonObject();
+		parameters.add("message", new JsonPrimitive("M%<>?="));
+		restClient.get("ping", parameters, PingResult.class, new OnRequestComplete<PingResult>() {
+			@Override
+			public void onComplete(RestError error, PingResult result) {
+				assertNull(error);
+				assertEquals("M%<>?=", result.response);
+				countDownLatch.countDown();
+			}
+		});
+
+		countDownLatch.await();
+	}
+
+	@LargeTest
 	public void testPost() throws InterruptedException {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -159,6 +179,26 @@ public class CraryRestClientTest extends AndroidTestCase {
 			public void onComplete(RestError error, PingResult result) {
 				assertNull(error);
 				assertEquals("hello", result.response);
+				countDownLatch.countDown();
+			}
+		});
+
+		countDownLatch.await();
+	}
+
+	@LargeTest
+	public void testPostEscapeParameters() throws InterruptedException {
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
+		restClient.setBaseUrl(TEST_BASE_URL);
+		JsonObject parameters = new JsonObject();
+		parameters.add("message", new JsonPrimitive("M%<>?="));
+		restClient.post("ping", parameters, PingResult.class, new OnRequestComplete<PingResult>() {
+			@Override
+			public void onComplete(RestError error, PingResult result) {
+				assertNull(error);
+				assertEquals("M%<>?=", result.response);
 				countDownLatch.countDown();
 			}
 		});

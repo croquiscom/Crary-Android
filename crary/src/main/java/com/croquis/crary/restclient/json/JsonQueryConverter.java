@@ -3,6 +3,8 @@ package com.croquis.crary.restclient.json;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Iterator;
 
 public class JsonQueryConverter {
@@ -23,7 +25,12 @@ public class JsonQueryConverter {
 		} else if (object instanceof JSONArray) {
 			addJSONArray(sb, path, (JSONArray) object);
 		} else if (object != JSONObject.NULL) {
-			sb.append(path).append("=").append(object.toString()).append("&");
+			sb.append(path).append("=");
+			try {
+				sb.append(URLEncoder.encode(object.toString(), "UTF-8"));
+			} catch (UnsupportedEncodingException ignored) {
+			}
+			sb.append("&");
 		} else {
 			// null
 			sb.append(path).append("=").append("&");
