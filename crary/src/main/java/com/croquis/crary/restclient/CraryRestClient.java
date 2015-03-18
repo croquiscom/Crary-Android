@@ -27,6 +27,9 @@ import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * Simplifies REST requests
+ */
 public class CraryRestClient {
 	public static class RestError extends Throwable {
 		private static final long serialVersionUID = 1L;
@@ -95,10 +98,20 @@ public class CraryRestClient {
 //		}
 	}
 
+	/**
+	 * Sets the base URL that all requests use
+	 *
+	 * @param baseUrl a new base URL
+	 */
 	public void setBaseUrl(String baseUrl) {
 		mBaseUrl = baseUrl;
 	}
 
+	/**
+	 * Returns the base URL
+	 *
+	 * @return the current base URL
+	 */
 	public String getBaseUrl() {
 		return mBaseUrl;
 	}

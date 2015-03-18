@@ -7,6 +7,11 @@ import rx.Observable;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
+/**
+ * The base Activity class for Croquis Apps.
+ * <p/>
+ * You must use this class for CraryApplication to work correctly.
+ */
 public class CraryActivity extends Activity {
 	@Override
 	protected void onStart() {

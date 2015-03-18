@@ -5,6 +5,11 @@ import android.app.Application;
 
 import rx.subjects.PublishSubject;
 
+/**
+ * The base Application class for Croquis Apps.
+ * <p/>
+ * This provides whether the app is on foreground or on background.
+ */
 public class CraryApplication extends Application {
 	public PublishSubject<Activity> didEnterForeground = PublishSubject.create();
 	public PublishSubject<Activity> didEnterBackground = PublishSubject.create();
@@ -25,10 +30,20 @@ public class CraryApplication extends Application {
 		}
 	}
 
+	/**
+	 * Called when the app is going foreground
+	 *
+	 * @param activity the Activity that makes the app on foreground
+	 */
 	protected void onDidEnterForeground(Activity activity) {
 		didEnterForeground.onNext(activity);
 	}
 
+	/**
+	 * Called when the app is going background
+	 *
+	 * @param activity the last Activity when the app goes on background
+	 */
 	protected void onDidEnterBackground(Activity activity) {
 		didEnterBackground.onNext(activity);
 	}
