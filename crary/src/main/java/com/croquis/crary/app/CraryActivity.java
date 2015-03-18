@@ -9,7 +9,7 @@ import rx.subscriptions.CompositeSubscription;
 
 /**
  * The base Activity class for Croquis Apps.
- * <p/>
+ * <br>
  * You must use this class for CraryApplication to work correctly.
  */
 public class CraryActivity extends Activity {

@@ -7,7 +7,7 @@ import rx.subjects.PublishSubject;
 
 /**
  * The base Application class for Croquis Apps.
- * <p/>
+ * <br>
  * This provides whether the app is on foreground or on background.
  */
 public class CraryApplication extends Application {
