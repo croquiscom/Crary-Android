@@ -21,6 +21,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
@@ -124,52 +126,56 @@ public class CraryRestClient {
 	//============================================================
 	// Methods for org.json
 
-	public void getUrl(String url, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.getNoCookie(url + JsonQueryConverter.convert(parameters), complete, JSONObject.class);
+	private String resolve(String path) {
+		try {
+			return new URL(new URL(getBaseUrl()), path).toString();
+		} catch (MalformedURLException e) {
+			return getBaseUrl() + path;
+		}
 	}
 
 	public void get(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.get(getBaseUrl() + path + JsonQueryConverter.convert(parameters), complete, JSONObject.class);
+		mImplApache.get(resolve(path) + JsonQueryConverter.convert(parameters), complete, JSONObject.class);
 	}
 
 	public void getList(String path, JSONObject parameters, OnRequestComplete<JSONArray> complete) {
-		mImplApache.get(getBaseUrl() + path + JsonQueryConverter.convert(parameters), complete, JSONArray.class);
+		mImplApache.get(resolve(path) + JsonQueryConverter.convert(parameters), complete, JSONArray.class);
 	}
 
 	public void post(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.post(getBaseUrl() + path, parameters, complete, JSONObject.class);
+		mImplApache.post(resolve(path), parameters, complete, JSONObject.class);
 	}
 
 	public void post(String path, JSONObject parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<JSONObject> complete) {
-		mImplApache.post(getBaseUrl() + path, parameters, attachments, complete, JSONObject.class);
+		mImplApache.post(resolve(path), parameters, attachments, complete, JSONObject.class);
 	}
 
 	public void postGzip(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.postGzip(getBaseUrl() + path, parameters, complete, JSONObject.class);
+		mImplApache.postGzip(resolve(path), parameters, complete, JSONObject.class);
 	}
 
 	public void post(String path, HttpEntity httpEntity, OnRequestComplete<JSONObject> complete) {
-		mImplApache.post(getBaseUrl() + path, httpEntity, complete, JSONObject.class);
+		mImplApache.post(resolve(path), httpEntity, complete, JSONObject.class);
 	}
 
 	public void postList(String path, JSONObject parameters, OnRequestComplete<JSONArray> complete) {
-		mImplApache.post(getBaseUrl() + path, parameters, complete, JSONArray.class);
+		mImplApache.post(resolve(path), parameters, complete, JSONArray.class);
 	}
 
 	public void put(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.put(getBaseUrl() + path, parameters, complete, JSONObject.class);
+		mImplApache.put(resolve(path), parameters, complete, JSONObject.class);
 	}
 
 	public void put(String path, JSONObject parameters, Collection<CraryRestClientAttachment> attachments, OnRequestComplete<JSONObject> complete) {
-		mImplApache.put(getBaseUrl() + path, parameters, attachments, complete, JSONObject.class);
+		mImplApache.put(resolve(path), parameters, attachments, complete, JSONObject.class);
 	}
 
 	public void put(String path, HttpEntity httpEntity, OnRequestComplete<JSONObject> complete) {
-		mImplApache.put(getBaseUrl() + path, httpEntity, complete, JSONObject.class);
+		mImplApache.put(resolve(path), httpEntity, complete, JSONObject.class);
 	}
 
 	public void delete(String path, JSONObject parameters, OnRequestComplete<JSONObject> complete) {
-		mImplApache.delete(getBaseUrl() + path + JsonQueryConverter.convert(parameters), complete, JSONObject.class);
+		mImplApache.delete(resolve(path) + JsonQueryConverter.convert(parameters), complete, JSONObject.class);
 	}
 
 	//============================================================
@@ -181,9 +187,9 @@ public class CraryRestClient {
 
 	public <T> void get(String path, JsonObject parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.get(getBaseUrl() + path + GsonQueryConverter.convert(parameters), complete, type);
+			mImplJavaNet.get(resolve(path) + GsonQueryConverter.convert(parameters), complete, type);
 		} else {
-			mImplApache.get(getBaseUrl() + path + GsonQueryConverter.convert(parameters), complete, type);
+			mImplApache.get(resolve(path) + GsonQueryConverter.convert(parameters), complete, type);
 		}
 	}
 
@@ -193,9 +199,9 @@ public class CraryRestClient {
 
 	public <T> void get(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.get(getBaseUrl() + path + GsonQueryConverter.convert(parameters, mGson), complete, type);
+			mImplJavaNet.get(resolve(path) + GsonQueryConverter.convert(parameters, mGson), complete, type);
 		} else {
-			mImplApache.get(getBaseUrl() + path + GsonQueryConverter.convert(parameters, mGson), complete, type);
+			mImplApache.get(resolve(path) + GsonQueryConverter.convert(parameters, mGson), complete, type);
 		}
 	}
 
@@ -209,17 +215,17 @@ public class CraryRestClient {
 
 	public <T> void post(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.post(getBaseUrl() + path, parameters, complete, type);
+			mImplJavaNet.post(resolve(path), parameters, complete, type);
 		} else {
-			mImplApache.post(getBaseUrl() + path, parameters, complete, type);
+			mImplApache.post(resolve(path), parameters, complete, type);
 		}
 	}
 
 	public <T> void post(String path, Object parameters, Collection<CraryRestClientAttachment> attachments, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.post(getBaseUrl() + path, parameters, attachments, complete, type);
+			mImplJavaNet.post(resolve(path), parameters, attachments, complete, type);
 		} else {
-			mImplApache.post(getBaseUrl() + path, parameters, attachments, complete, type);
+			mImplApache.post(resolve(path), parameters, attachments, complete, type);
 		}
 	}
 
@@ -229,9 +235,9 @@ public class CraryRestClient {
 
 	public <T> void postGzip(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.postGzip(getBaseUrl() + path, parameters, complete, type);
+			mImplJavaNet.postGzip(resolve(path), parameters, complete, type);
 		} else {
-			mImplApache.postGzip(getBaseUrl() + path, parameters, complete, type);
+			mImplApache.postGzip(resolve(path), parameters, complete, type);
 		}
 	}
 
@@ -245,17 +251,17 @@ public class CraryRestClient {
 
 	public <T> void put(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.put(getBaseUrl() + path, parameters, complete, type);
+			mImplJavaNet.put(resolve(path), parameters, complete, type);
 		} else {
-			mImplApache.put(getBaseUrl() + path, parameters, complete, type);
+			mImplApache.put(resolve(path), parameters, complete, type);
 		}
 	}
 
 	public <T> void put(String path, Object parameters, Collection<CraryRestClientAttachment> attachments, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.put(getBaseUrl() + path, parameters, attachments, complete, type);
+			mImplJavaNet.put(resolve(path), parameters, attachments, complete, type);
 		} else {
-			mImplApache.put(getBaseUrl() + path, parameters, attachments, complete, type);
+			mImplApache.put(resolve(path), parameters, attachments, complete, type);
 		}
 	}
 
@@ -265,9 +271,9 @@ public class CraryRestClient {
 
 	public <T> void delete(String path, Object parameters, Type type, OnRequestComplete<T> complete) {
 		if (mImplJavaNet != null) {
-			mImplJavaNet.delete(getBaseUrl() + path + GsonQueryConverter.convert(parameters, mGson), complete, type);
+			mImplJavaNet.delete(resolve(path) + GsonQueryConverter.convert(parameters, mGson), complete, type);
 		} else {
-			mImplApache.delete(getBaseUrl() + path + GsonQueryConverter.convert(parameters, mGson), complete, type);
+			mImplApache.delete(resolve(path) + GsonQueryConverter.convert(parameters, mGson), complete, type);
 		}
 	}
 
