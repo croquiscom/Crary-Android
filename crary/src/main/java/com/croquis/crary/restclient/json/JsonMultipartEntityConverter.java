@@ -27,18 +27,19 @@ public class JsonMultipartEntityConverter {
 		} else if (object != JSONObject.NULL) {
 			try {
 				entity.addPart(path, new StringBody(object.toString(), Charset.forName("UTF-8")));
-			} catch (UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException ignored) {
 			}
 		} else {
 			// null
 			try {
 				entity.addPart(path, new StringBody("", Charset.forName("UTF-8")));
-			} catch (UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException ignored) {
 			}
 		}
 	}
 
 	private static void addJSONObject(MultipartEntity entity, String path, JSONObject object) {
+		//noinspection unchecked
 		Iterator<String> i = object.keys();
 		while (i.hasNext()) {
 			String key = i.next();
@@ -46,15 +47,15 @@ public class JsonMultipartEntityConverter {
 			if (value == null) {
 				continue;
 			}
-			String subpath = path.length() > 0 ? path + "[" + key + "]" : key;
-			addPlainObject(entity, subpath, value);
+			String sub_path = path.length() > 0 ? path + "[" + key + "]" : key;
+			addPlainObject(entity, sub_path, value);
 		}
 	}
 
 	private static void addJSONArray(MultipartEntity entity, String path, JSONArray object) {
 		for (int i = 0; i < object.length(); i++) {
-			String subpath = path + "[" + i + "]";
-			addPlainObject(entity, subpath, object.opt(i));
+			String sub_path = path + "[" + i + "]";
+			addPlainObject(entity, sub_path, object.opt(i));
 		}
 	}
 }

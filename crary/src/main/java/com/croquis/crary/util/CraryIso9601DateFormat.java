@@ -11,10 +11,11 @@ import java.util.TimeZone;
  * http://en.wikipedia.org/wiki/ISO_8601
  */
 public class CraryIso9601DateFormat {
-	private static DateFormat mFormat;
+	private static final DateFormat mFormat;
 
 	static {
 		// "'Z'" does not mean a time zone, is just a character Z.
+		//noinspection SpellCheckingInspection
 		mFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
 		mFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}

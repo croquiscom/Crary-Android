@@ -47,7 +47,7 @@ public class JSONArrayBuilder {
 	public JSONArrayBuilder add(double value) {
 		try {
 			mJSONArray.put(value);
-		} catch (JSONException e) {
+		} catch (JSONException ignored) {
 		}
 		return this;
 	}

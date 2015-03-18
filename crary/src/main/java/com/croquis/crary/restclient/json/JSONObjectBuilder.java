@@ -41,7 +41,7 @@ public class JSONObjectBuilder {
 	public JSONObjectBuilder add(String name, boolean value) {
 		try {
 			mJSONObject.put(name, value);
-		} catch (JSONException e) {
+		} catch (JSONException ignored) {
 		}
 		return this;
 	}
@@ -49,7 +49,7 @@ public class JSONObjectBuilder {
 	public JSONObjectBuilder add(String name, double value) {
 		try {
 			mJSONObject.put(name, value);
-		} catch (JSONException e) {
+		} catch (JSONException ignored) {
 		}
 		return this;
 	}
@@ -57,7 +57,7 @@ public class JSONObjectBuilder {
 	public JSONObjectBuilder add(String name, int value) {
 		try {
 			mJSONObject.put(name, value);
-		} catch (JSONException e) {
+		} catch (JSONException ignored) {
 		}
 		return this;
 	}
@@ -65,7 +65,7 @@ public class JSONObjectBuilder {
 	public JSONObjectBuilder add(String name, long value) {
 		try {
 			mJSONObject.put(name, value);
-		} catch (JSONException e) {
+		} catch (JSONException ignored) {
 		}
 		return this;
 	}
@@ -77,7 +77,7 @@ public class JSONObjectBuilder {
 			} else {
 				mJSONObject.put(name, JSONObject.NULL);
 			}
-		} catch (JSONException e) {
+		} catch (JSONException ignored) {
 		}
 		return this;
 	}
@@ -85,7 +85,7 @@ public class JSONObjectBuilder {
 	public JSONObjectBuilder add(String name, Object value) {
 		try {
 			mJSONObject.put(name, value != null ? value : JSONObject.NULL);
-		} catch (JSONException e) {
+		} catch (JSONException ignored) {
 		}
 		return this;
 	}

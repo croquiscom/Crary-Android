@@ -57,11 +57,12 @@ public class CraryDateTypeAdapter implements JsonSerializer<Date>, JsonDeseriali
 		if (date != null) {
 			return date;
 		}
-		for (DateFormat format : mFormats) {
-			synchronized (format) {
+		//noinspection ForLoopReplaceableByForEach
+		for (int i = 0; i < mFormats.length; i++) {
+			synchronized (mFormats[i]) {
 				try {
-					return format.parse(str);
-				} catch (ParseException e) {
+					return mFormats[i].parse(str);
+				} catch (ParseException ignored) {
 				}
 			}
 		}

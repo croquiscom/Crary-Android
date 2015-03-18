@@ -83,7 +83,7 @@ public class CraryRestClient {
 			int resId = context.getResources().getIdentifier("app_name", "string", context.getPackageName());
 			String appName = resId == 0 ? "Unknown" : context.getString(resId);
 			userAgent = String.format("%s/%s (%s; Android %s)", appName, appVersion, Build.MODEL, Build.VERSION.RELEASE);
-		} catch (PackageManager.NameNotFoundException e) {
+		} catch (PackageManager.NameNotFoundException ignored) {
 		}
 		CraryDateTypeAdapter dateTypeAdapter = new CraryDateTypeAdapter();
 		mGson = new GsonBuilder()
@@ -93,6 +93,7 @@ public class CraryRestClient {
 				.registerTypeAdapter(java.sql.Date.class, dateTypeAdapter)
 				.create();
 		mImplApache = new CraryRestClientImplApache(context, mGson, userAgent);
+		mImplJavaNet = null;
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 //			mImplJavaNet = new CraryRestClientImplJavaNet(context, mGson, userAgent);
 //		}
@@ -283,7 +284,7 @@ public class CraryRestClient {
 				gzos.close();
 				gzipped = baos.toByteArray();
 				baos.close();
-			} catch (IOException e) {
+			} catch (IOException ignored) {
 			}
 		}
 		return gzipped;
@@ -303,7 +304,7 @@ public class CraryRestClient {
 				gzis.close();
 				ungzipped = baos.toByteArray();
 				baos.close();
-			} catch (IOException e) {
+			} catch (IOException ignored) {
 			}
 		}
 		return ungzipped;

@@ -45,15 +45,15 @@ public class GsonMimeCraftMultipartConverter {
 
 	private static void addJsonObject(Multipart.Builder builder, String path, JsonObject object) {
 		for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
-			String subpath = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
-			addJsonElement(builder, subpath, entry.getValue());
+			String sub_path = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
+			addJsonElement(builder, sub_path, entry.getValue());
 		}
 	}
 
 	private static void addJsonArray(Multipart.Builder builder, String path, JsonArray object) {
 		for (int i = 0; i < object.size(); i++) {
-			String subpath = path + "[" + i + "]";
-			addJsonElement(builder, subpath, object.get(i));
+			String sub_path = path + "[" + i + "]";
+			addJsonElement(builder, sub_path, object.get(i));
 		}
 	}
 }

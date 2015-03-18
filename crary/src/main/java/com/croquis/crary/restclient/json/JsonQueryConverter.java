@@ -31,6 +31,7 @@ public class JsonQueryConverter {
 	}
 
 	private static void addJSONObject(StringBuilder sb, String path, JSONObject object) {
+		//noinspection unchecked
 		Iterator<String> i = object.keys();
 		while (i.hasNext()) {
 			String key = i.next();
@@ -38,15 +39,15 @@ public class JsonQueryConverter {
 			if (value == null) {
 				continue;
 			}
-			String subpath = path.length() > 0 ? path + "[" + key + "]" : key;
-			addPlainObject(sb, subpath, value);
+			String sub_path = path.length() > 0 ? path + "[" + key + "]" : key;
+			addPlainObject(sb, sub_path, value);
 		}
 	}
 
 	private static void addJSONArray(StringBuilder sb, String path, JSONArray object) {
 		for (int i = 0; i < object.length(); i++) {
-			String subpath = path + "[" + i + "]";
-			addPlainObject(sb, subpath, object.opt(i));
+			String sub_path = path + "[" + i + "]";
+			addPlainObject(sb, sub_path, object.opt(i));
 		}
 	}
 }

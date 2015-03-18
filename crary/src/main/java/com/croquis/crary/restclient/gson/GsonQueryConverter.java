@@ -42,15 +42,15 @@ public class GsonQueryConverter {
 
 	private static void addJsonObject(StringBuilder sb, String path, JsonObject object) {
 		for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
-			String subpath = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
-			addJsonElement(sb, subpath, entry.getValue());
+			String sub_path = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
+			addJsonElement(sb, sub_path, entry.getValue());
 		}
 	}
 
 	private static void addJsonArray(StringBuilder sb, String path, JsonArray object) {
 		for (int i = 0; i < object.size(); i++) {
-			String subpath = path + "[" + i + "]";
-			addJsonElement(sb, subpath, object.get(i));
+			String sub_path = path + "[" + i + "]";
+			addJsonElement(sb, sub_path, object.get(i));
 		}
 	}
 }

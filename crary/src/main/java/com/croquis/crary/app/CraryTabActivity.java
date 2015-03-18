@@ -7,6 +7,7 @@ import rx.Observable;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
+@SuppressWarnings("deprecation")
 public class CraryTabActivity extends TabActivity {
 	@Override
 	protected void onStart() {

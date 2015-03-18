@@ -36,28 +36,28 @@ public class GsonMultipartEntityConverter {
 		} else if (object.isJsonPrimitive()) {
 			try {
 				entity.addPart(path, new StringBody(object.getAsString(), Charset.forName("UTF-8")));
-			} catch (UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException ignored) {
 			}
 		} else {
 			// null
 			try {
 				entity.addPart(path, new StringBody("", Charset.forName("UTF-8")));
-			} catch (UnsupportedEncodingException e) {
+			} catch (UnsupportedEncodingException ignored) {
 			}
 		}
 	}
 
 	private static void addJsonObject(MultipartEntity entity, String path, JsonObject object) {
 		for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
-			String subpath = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
-			addJsonElement(entity, subpath, entry.getValue());
+			String sub_path = path.length() > 0 ? path + "[" + entry.getKey() + "]" : entry.getKey();
+			addJsonElement(entity, sub_path, entry.getValue());
 		}
 	}
 
 	private static void addJsonArray(MultipartEntity entity, String path, JsonArray object) {
 		for (int i = 0; i < object.size(); i++) {
-			String subpath = path + "[" + i + "]";
-			addJsonElement(entity, subpath, object.get(i));
+			String sub_path = path + "[" + i + "]";
+			addJsonElement(entity, sub_path, object.get(i));
 		}
 	}
 }

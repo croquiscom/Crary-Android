@@ -10,7 +10,7 @@ public class CraryInputDialog {
 	}
 
 	public static void selectSingle(Context context, int itemIds, String title, DialogInterface.OnClickListener listener) {
-		selectSingle(context, context.getResources().getStringArray(itemIds), listener);
+		selectSingle(context, context.getResources().getStringArray(itemIds), title, listener);
 	}
 
 	public static void selectSingle(Context context, String[] items, DialogInterface.OnClickListener listener) {
