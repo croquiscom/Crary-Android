@@ -75,14 +75,15 @@ public class CraryRestClientImplApache {
 
 	Handler mHandler = new Handler(Looper.getMainLooper());
 
-	public CraryRestClientImplApache(Context context, Gson gson, String userAgent) {
+	public CraryRestClientImplApache(Context context, Gson gson) {
 		mContext = context;
 		mGson = gson;
 		createClient();
-		if (userAgent != null) {
-			HttpProtocolParams.setUserAgent(mClient.getParams(), userAgent);
-		}
 		loadSessionId();
+	}
+
+	public void setUserAgent(String userAgent) {
+		HttpProtocolParams.setUserAgent(mClient.getParams(), userAgent);
 	}
 
 	private void createClient() {

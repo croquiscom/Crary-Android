@@ -62,6 +62,7 @@ public class CraryRestClient {
 
 	private static CraryRestClient sSharedClient;
 
+	private final Context mContext;
 	private CraryRestClientImplApache mImplApache;
 	private CraryRestClientImplJavaNet mImplJavaNet;
 	private Gson mGson;
@@ -76,17 +77,7 @@ public class CraryRestClient {
 	}
 
 	private CraryRestClient(Context context) {
-		String userAgent = null;
-		try {
-			String appVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-			if (appVersion == null) {
-				appVersion = "Unknown";
-			}
-			int resId = context.getResources().getIdentifier("app_name", "string", context.getPackageName());
-			String appName = resId == 0 ? "Unknown" : context.getString(resId);
-			userAgent = String.format("%s/%s (%s; Android %s)", appName, appVersion, Build.MODEL, Build.VERSION.RELEASE);
-		} catch (PackageManager.NameNotFoundException ignored) {
-		}
+		mContext = context;
 		CraryDateTypeAdapter dateTypeAdapter = new CraryDateTypeAdapter();
 		mGson = new GsonBuilder()
 				.setFieldNamingStrategy(new CraryFieldNamingStrategy())
@@ -94,11 +85,12 @@ public class CraryRestClient {
 				.registerTypeAdapter(Timestamp.class, dateTypeAdapter)
 				.registerTypeAdapter(java.sql.Date.class, dateTypeAdapter)
 				.create();
-		mImplApache = new CraryRestClientImplApache(context, mGson, userAgent);
+		mImplApache = new CraryRestClientImplApache(context, mGson);
 		mImplJavaNet = null;
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-//			mImplJavaNet = new CraryRestClientImplJavaNet(context, mGson, userAgent);
+//			mImplJavaNet = new CraryRestClientImplJavaNet(context, mGson);
 //		}
+		setAppName(null);
 	}
 
 	/**
@@ -121,6 +113,28 @@ public class CraryRestClient {
 
 	public void clearSession() {
 		mImplApache.clearSession();
+	}
+
+	public void setAppName(String appName) {
+		String userAgent = null;
+		try {
+			String appVersion = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionName;
+			if (appVersion == null) {
+				appVersion = "Unknown";
+			}
+			if (appName == null) {
+				int resId = mContext.getResources().getIdentifier("app_name", "string", mContext.getPackageName());
+				appName = resId == 0 ? "Unknown" : mContext.getString(resId);
+			}
+			userAgent = String.format("%s/%s (%s; Android %s)", appName, appVersion, Build.MODEL, Build.VERSION.RELEASE);
+		} catch (PackageManager.NameNotFoundException ignored) {
+		}
+		if (mImplApache != null) {
+			mImplApache.setUserAgent(userAgent);
+		}
+		if (mImplJavaNet != null) {
+			mImplJavaNet.setUserAgent(userAgent);
+		}
 	}
 
 	//============================================================

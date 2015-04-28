@@ -36,11 +36,14 @@ public class CraryRestClientImplJavaNet {
 
 	Handler mHandler = new Handler(Looper.getMainLooper());
 
-	public CraryRestClientImplJavaNet(Context context, Gson gson, String userAgent) {
+	public CraryRestClientImplJavaNet(Context context, Gson gson) {
 		mContext = context;
 		mGson = gson;
-		mUserAgent = userAgent;
 		CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+	}
+
+	public void setUserAgent(String userAgent) {
+		mUserAgent = userAgent;
 	}
 
 	public <T> void get(String url, CraryRestClient.OnRequestComplete<T> complete, Type type) {
