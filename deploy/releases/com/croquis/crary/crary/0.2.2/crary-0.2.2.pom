@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.croquis.crary</groupId>
   <artifactId>crary</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.2</version>
   <packaging>aar</packaging>
   <name>crary</name>
   <description>Croquis's common libraries for Android</description>
