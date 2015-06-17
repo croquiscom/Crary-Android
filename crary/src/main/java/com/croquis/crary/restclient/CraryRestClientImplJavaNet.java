@@ -13,6 +13,8 @@ import com.google.gson.JsonParseException;
 import com.squareup.mimecraft.Multipart;
 import com.squareup.mimecraft.Part;
 
+import org.apache.http.HttpStatus;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -155,8 +157,14 @@ public class CraryRestClientImplJavaNet {
 		CraryRestClient.RestError error;
 		T json;
 		try {
-			Reader reader = new InputStreamReader(urlConnection.getInputStream());
-			error = getResponseError(urlConnection.getResponseCode(), reader);
+			int responseCode = urlConnection.getResponseCode();
+			Reader reader;
+			if (responseCode >= HttpStatus.SC_BAD_REQUEST) {
+				reader = new InputStreamReader(urlConnection.getErrorStream());
+			} else {
+				reader = new InputStreamReader(urlConnection.getInputStream());
+			}
+			error = getResponseError(responseCode, reader);
 			//noinspection unchecked
 			json = mGson.fromJson(reader, type);
 		} catch (IOException e) {
