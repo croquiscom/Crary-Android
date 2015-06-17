@@ -167,15 +167,15 @@ public class CraryRestClientImplJavaNet {
 			error = getResponseError(responseCode, reader);
 			//noinspection unchecked
 			json = mGson.fromJson(reader, type);
-		} catch (IOException e) {
+		} catch (IOException ignored) {
 			if (complete != null) {
 				complete.onComplete(CraryRestClient.RestError.UNKNOWN_ERROR, null);
 			}
 			urlConnection.disconnect();
 			return;
-		} catch (JsonParseException e) {
+		} catch (JsonParseException ignored) {
 			if (complete != null) {
-				complete.onComplete(new CraryRestClient.RestError(400, e), null);
+				complete.onComplete(CraryRestClient.RestError.UNRECOGNIZABLE_RESULT, null);
 			}
 			urlConnection.disconnect();
 			return;
@@ -192,7 +192,12 @@ public class CraryRestClientImplJavaNet {
 		if (statusCode >= 200 && statusCode < 300) {
 			return null;
 		}
-		JsonObject json = mGson.fromJson(reader, JsonObject.class);
+		JsonObject json;
+		try {
+			json = mGson.fromJson(reader, JsonObject.class);
+		} catch (JsonParseException ignored) {
+			return CraryRestClient.RestError.UNRECOGNIZABLE_RESULT;
+		}
 		if (json == null) {
 			return CraryRestClient.RestError.NETWORK_ERROR;
 		}
