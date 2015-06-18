@@ -2,11 +2,11 @@
 <metadata>
   <groupId>com.croquis.crary</groupId>
   <artifactId>crary</artifactId>
-  <version>0.2.2</version>
+  <version>0.2.3</version>
   <versioning>
     <versions>
-      <version>0.2.2</version>
+      <version>0.2.3</version>
     </versions>
-    <lastUpdated>20150428063433</lastUpdated>
+    <lastUpdated>20150618024351</lastUpdated>
   </versioning>
 </metadata>

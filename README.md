@@ -11,20 +11,12 @@
         maven {
             url 'https://github.com/croquiscom/Crary-Android/raw/master/deploy/releases'
         }
-        maven {
-            url 'https://github.com/croquiscom/Crary-Android/raw/master/deploy/snapshots'
-        }
     }
 ```
 
 ### 2. dependency
-#### snapshot
 ``` groovy
-    compile 'com.croquis.crary:crary:0.1.0-SNAPSHOT@aar'
-```
-#### release
-``` groovy
-    compile 'com.croquis.crary:crary:0.1.0@aar'
+    compile 'com.croquis.crary:crary:0.2.3@aar'
 ```
 
 ## Build
