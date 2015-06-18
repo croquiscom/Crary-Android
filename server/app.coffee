@@ -35,6 +35,16 @@ setupRouter = (router) ->
     res.status req.query.status or 200
     .send 'Plain Text Result'
 
+  router.post '/binary', (req, res) ->
+    buffers = []
+    req.on 'data', (chunk) ->
+      buffers.push chunk
+    req.on 'end', ->
+      buffer = Buffer.concat buffers
+      for i in [0...buffer.length]
+        buffer.writeInt8 buffer.readInt8(i)+i, i
+      res.send buffer
+
 app = crary.express.createApp
   project_root: __dirname
   log4js_config:

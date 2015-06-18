@@ -292,6 +292,17 @@ public class CraryRestClient {
 	}
 
 	//============================================================
+	// Etc Methods
+
+	public <T> void post(String path, byte[] data, OnRequestComplete<byte[]> complete) {
+		if (mImplJavaNet != null) {
+			mImplJavaNet.post(resolve(path), data, complete);
+		} else {
+			mImplApache.post(resolve(path), data, complete);
+		}
+	}
+
+	//============================================================
 	// Private Methods
 
 	static byte[] gzipDeflate(byte[] data) {

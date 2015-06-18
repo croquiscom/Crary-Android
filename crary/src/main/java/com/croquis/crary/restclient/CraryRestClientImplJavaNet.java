@@ -15,7 +15,9 @@ import com.squareup.mimecraft.Part;
 
 import org.apache.http.HttpStatus;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -74,6 +76,10 @@ public class CraryRestClientImplJavaNet {
 
 	public <T> void delete(String url, CraryRestClient.OnRequestComplete<T> complete, Type type) {
 		request(url, "DELETE", null, null, false, complete, type);
+	}
+
+	public void post(final String url, final byte[] data, final CraryRestClient.OnRequestComplete<byte[]> complete) {
+		request(url, "POST", data, complete);
 	}
 
 	private <T> void request(final String url, final String method, final Object parameters, final Collection<CraryRestClientAttachment> attachments, final boolean gzip, final CraryRestClient.OnRequestComplete<T> complete, final Type type) {
@@ -206,6 +212,79 @@ public class CraryRestClientImplJavaNet {
 		JsonElement descriptionObj = json.get("description");
 		String description = descriptionObj != null && descriptionObj.isJsonPrimitive() ? descriptionObj.getAsString() : null;
 		return new CraryRestClient.RestError(statusCode, error, description);
+	}
+
+	private void request(final String url, final String method, final byte[] data, final CraryRestClient.OnRequestComplete<byte[]> complete) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				HttpURLConnection urlConnection;
+				try {
+					urlConnection = (HttpURLConnection) new URL(url).openConnection();
+				} catch (IOException e) {
+					if (complete != null) {
+						complete.onComplete(CraryRestClient.RestError.UNKNOWN_ERROR, null);
+					}
+					return;
+				} catch (ClassCastException e) {
+					if (complete != null) {
+						complete.onComplete(CraryRestClient.RestError.UNKNOWN_ERROR, null);
+					}
+					return;
+				}
+
+				try {
+					if (mUserAgent != null) {
+						urlConnection.setRequestProperty("User-Agent", mUserAgent);
+					}
+					urlConnection.setRequestMethod(method);
+					if (data != null) {
+						urlConnection.setDoOutput(true);
+						urlConnection.setRequestProperty("Content-Type", "application/octet-stream");
+						OutputStream out = urlConnection.getOutputStream();
+						out.write(data);
+						out.close();
+					}
+				} catch (ProtocolException e) {
+					if (complete != null) {
+						complete.onComplete(CraryRestClient.RestError.UNKNOWN_ERROR, null);
+					}
+					urlConnection.disconnect();
+					return;
+				} catch (IOException e) {
+					if (complete != null) {
+						complete.onComplete(CraryRestClient.RestError.UNKNOWN_ERROR, null);
+					}
+					urlConnection.disconnect();
+					return;
+				}
+
+				byte[] output;
+				try {
+					InputStream inputStream = urlConnection.getInputStream();
+					output = toByteArray(inputStream);
+					inputStream.close();
+				} catch (IOException ignored) {
+					if (complete != null) {
+						complete.onComplete(CraryRestClient.RestError.UNKNOWN_ERROR, null);
+					}
+					urlConnection.disconnect();
+					return;
+				}
+
+				callOnComplete(complete, null, output);
+			}
+		}).start();
+	}
+
+	private static byte[] toByteArray(InputStream input) throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		byte[] buffer = new byte[4096];
+		int n;
+		while (-1 != (n = input.read(buffer))) {
+			output.write(buffer, 0, n);
+		}
+		return output.toByteArray();
 	}
 
 	private <T> void callOnComplete(final CraryRestClient.OnRequestComplete<T> complete, final CraryRestClient.RestError error, final T result) {

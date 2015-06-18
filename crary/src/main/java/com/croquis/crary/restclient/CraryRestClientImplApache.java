@@ -178,6 +178,10 @@ public class CraryRestClientImplApache {
 		request(new HttpPut(url), addAttachmentsToMultipartEntity(GsonMultipartEntityConverter.convert(parameters, mGson), attachments), complete, type, true);
 	}
 
+	public void post(final String url, final byte[] data, final CraryRestClient.OnRequestComplete<byte[]> complete) {
+		request(new HttpPost(url), makeBinaryHttpEntity(data), complete, byte[].class, true);
+	}
+
 	private <T> void request(HttpEntityEnclosingRequestBase request, HttpEntity entity,
 							 CraryRestClient.OnRequestComplete<T> complete, Type type, boolean useCookie) {
 		if (entity != null) {
@@ -227,6 +231,15 @@ public class CraryRestClientImplApache {
 		return entity;
 	}
 
+	private static HttpEntity makeBinaryHttpEntity(byte[] data) {
+		ByteArrayEntity entity = null;
+		if (data != null) {
+			entity = new ByteArrayEntity(data);
+			entity.setContentType("application/octet-stream");
+		}
+		return entity;
+	}
+
 	private static HttpEntity makeGzipHttpEntity(String json) {
 		ByteArrayEntity entity = new ByteArrayEntity(CraryRestClient.gzipDeflate(json.getBytes()));
 		entity.setContentEncoding("gzip");
@@ -252,6 +265,17 @@ public class CraryRestClientImplApache {
 
 	@SuppressWarnings("unchecked")
 	private <T> void processResponse(HttpResponse response, OnRequestComplete<T> complete, Type type) {
+		if (type == byte[].class) {
+			T result = (T) getResponseBinary(response);
+			if (result == null) {
+				callOnComplete(complete, RestError.NETWORK_ERROR, null);
+				return;
+			} else {
+				callOnComplete(complete, null, result);
+				return;
+			}
+		}
+
 		String result = getResponseString(response);
 		if (result == null) {
 			callOnComplete(complete, RestError.NETWORK_ERROR, null);
@@ -334,6 +358,32 @@ public class CraryRestClientImplApache {
 				}
 				entity.consumeContent();
 				result = new String(data, charset);
+			} catch (IOException ignored) {
+			}
+		}
+		return result;
+	}
+
+	private byte[] getResponseBinary(HttpResponse response) {
+		if (response == null) {
+			return null;
+		}
+
+		boolean gzipped = false;
+		Header encodingHeader = response.getFirstHeader(HTTP.CONTENT_ENCODING);
+		if (encodingHeader != null) {
+			gzipped = "gzip".equals(encodingHeader.getValue());
+		}
+
+		HttpEntity entity = response.getEntity();
+		byte[] result = null;
+		if (entity != null) {
+			try {
+				result = EntityUtils.toByteArray(entity);
+				if (gzipped) {
+					result = CraryRestClient.gzipInflate(result);
+				}
+				entity.consumeContent();
 			} catch (IOException ignored) {
 			}
 		}
