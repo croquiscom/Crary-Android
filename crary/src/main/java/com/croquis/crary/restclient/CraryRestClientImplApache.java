@@ -58,6 +58,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CraryRestClientImplApache {
 	private static final int MAX_TOTAL_CONNECTION = 20;
@@ -67,6 +69,9 @@ public class CraryRestClientImplApache {
 
 	private static final String COOKIE_SESSION = "cookie_session";
 	public static final String SESSION_ID = "connect.sid";
+
+	private static int sAvailableProcessors = Runtime.getRuntime().availableProcessors();
+	private static ExecutorService sExecutorService = (sAvailableProcessors > 2) ? Executors.newFixedThreadPool(sAvailableProcessors - 1) : Executors.newFixedThreadPool(1);
 
 	Context mContext;
 	HttpClient mClient;
@@ -198,7 +203,7 @@ public class CraryRestClientImplApache {
 		request.setHeader("Accept", "application/json");
 		request.setHeader("Accept-Encoding", "gzip");
 
-		new Thread(new Runnable() {
+		sExecutorService.execute(new Runnable() {
 			@Override
 			public void run() {
 				HttpResponse response = null;
@@ -216,7 +221,7 @@ public class CraryRestClientImplApache {
 				processResponse(response, complete, type);
 
 			}
-		}).start();
+		});
 	}
 
 	private static HttpEntity makeHttpEntity(String json) {
