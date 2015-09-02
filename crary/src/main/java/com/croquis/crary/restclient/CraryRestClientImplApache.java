@@ -119,6 +119,10 @@ public class CraryRestClientImplApache {
 		return getCookieSessionPreference().edit().clear().commit();
 	}
 
+	public String getSessionId() {
+		return mSessionId;
+	}
+
 	private SharedPreferences getCookieSessionPreference() {
 		return mContext.getSharedPreferences(COOKIE_SESSION, Context.MODE_PRIVATE);
 	}

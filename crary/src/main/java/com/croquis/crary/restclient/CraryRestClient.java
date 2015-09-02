@@ -112,7 +112,16 @@ public class CraryRestClient {
 	}
 
 	public void clearSession() {
-		mImplApache.clearSession();
+		if (mImplApache != null) {
+			mImplApache.clearSession();
+		}
+	}
+
+	public String getSessionId() {
+		if (mImplApache != null) {
+			return mImplApache.getSessionId();
+		}
+		return null;
 	}
 
 	public void setAppName(String appName) {
