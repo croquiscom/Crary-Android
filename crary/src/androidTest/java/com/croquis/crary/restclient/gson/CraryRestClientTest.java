@@ -21,6 +21,12 @@ import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 public class CraryRestClientTest extends AndroidTestCase {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        CraryRestClient.sharedClient(getContext()).clearSession();
+    }
+
     private static class PingResult {
         String response;
     }

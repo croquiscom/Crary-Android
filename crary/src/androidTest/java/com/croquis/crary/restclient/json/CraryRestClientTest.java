@@ -16,6 +16,12 @@ import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 public class CraryRestClientTest extends AndroidTestCase {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        CraryRestClient.sharedClient(getContext()).clearSession();
+    }
+
     @LargeTest
     public void testGet() throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(1);

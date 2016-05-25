@@ -11,6 +11,12 @@ import org.json.JSONObject;
 import java.util.concurrent.CountDownLatch;
 
 public class CraryRestClientResolveTest extends AndroidTestCase {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        CraryRestClient.sharedClient(getContext()).clearSession();
+    }
+
     @LargeTest
     public void testParent() throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
