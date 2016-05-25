@@ -20,52 +20,52 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class CraryDateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
-	private final DateFormat mFormats[];
+    private final DateFormat mFormats[];
 
-	public CraryDateTypeAdapter() {
-		mFormats = new DateFormat[2];
-		mFormats[0] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS", Locale.US);
-		mFormats[0].setTimeZone(TimeZone.getTimeZone("GMT"));
-		mFormats[1] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
-		mFormats[1].setTimeZone(TimeZone.getTimeZone("GMT"));
-	}
+    public CraryDateTypeAdapter() {
+        mFormats = new DateFormat[2];
+        mFormats[0] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS", Locale.US);
+        mFormats[0].setTimeZone(TimeZone.getTimeZone("GMT"));
+        mFormats[1] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
+        mFormats[1].setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
-	@Override
-	public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-		return new JsonPrimitive(CraryIso9601DateFormat.format(src));
-	}
+    @Override
+    public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+        return new JsonPrimitive(CraryIso9601DateFormat.format(src));
+    }
 
-	@Override
-	public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-		if (!(json instanceof JsonPrimitive)) {
-			throw new JsonParseException("The date should be a string value");
-		}
-		Date date = parseDate(json.getAsString());
-		if (typeOfT == Date.class) {
-			return date;
-		} else if (typeOfT == Timestamp.class) {
-			return new Timestamp(date.getTime());
-		} else if (typeOfT == java.sql.Date.class) {
-			return new java.sql.Date(date.getTime());
-		} else {
-			throw new IllegalArgumentException(getClass() + " cannot deserialize to " + typeOfT);
-		}
-	}
+    @Override
+    public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        if (!(json instanceof JsonPrimitive)) {
+            throw new JsonParseException("The date should be a string value");
+        }
+        Date date = parseDate(json.getAsString());
+        if (typeOfT == Date.class) {
+            return date;
+        } else if (typeOfT == Timestamp.class) {
+            return new Timestamp(date.getTime());
+        } else if (typeOfT == java.sql.Date.class) {
+            return new java.sql.Date(date.getTime());
+        } else {
+            throw new IllegalArgumentException(getClass() + " cannot deserialize to " + typeOfT);
+        }
+    }
 
-	private Date parseDate(String str) {
-		Date date = CraryIso9601DateFormat.parse(str);
-		if (date != null) {
-			return date;
-		}
-		//noinspection ForLoopReplaceableByForEach
-		for (int i = 0; i < mFormats.length; i++) {
-			synchronized (mFormats[i]) {
-				try {
-					return mFormats[i].parse(str);
-				} catch (ParseException ignored) {
-				}
-			}
-		}
-		throw new JsonSyntaxException(str);
-	}
+    private Date parseDate(String str) {
+        Date date = CraryIso9601DateFormat.parse(str);
+        if (date != null) {
+            return date;
+        }
+        //noinspection ForLoopReplaceableByForEach
+        for (int i = 0; i < mFormats.length; i++) {
+            synchronized (mFormats[i]) {
+                try {
+                    return mFormats[i].parse(str);
+                } catch (ParseException ignored) {
+                }
+            }
+        }
+        throw new JsonSyntaxException(str);
+    }
 }
