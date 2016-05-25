@@ -3,6 +3,7 @@ package com.croquis.crary.restclient.json;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 
+import com.croquis.crary.TestConfig;
 import com.croquis.crary.restclient.CraryRestClient;
 import com.croquis.crary.restclient.CraryRestClient.OnRequestComplete;
 import com.croquis.crary.restclient.CraryRestClient.RestError;
@@ -15,15 +16,12 @@ import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 public class CraryRestClientTest extends AndroidTestCase {
-	// It should be changed to your url
-	private final static String TEST_BASE_URL = "http://192.168.56.1:3000/";
-
 	@LargeTest
 	public void testGet() throws InterruptedException {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		restClient.get("ping", null, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
@@ -41,7 +39,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		JSONObject parameters = new JSONObject();
 		parameters.put("message", "M%<>?=");
 		restClient.get("ping", parameters, new OnRequestComplete<JSONObject>() {
@@ -62,7 +60,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		JSONObject parameters = new JSONObject();
 		parameters.put("message", "hello");
 		restClient.get("ping", parameters, new OnRequestComplete<JSONObject>() {
@@ -83,7 +81,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		restClient.post("ping", (JSONObject) null, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
@@ -101,7 +99,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		JSONObject parameters = new JSONObject();
 		parameters.put("message", "M%<>?=");
 		restClient.post("ping", parameters, new OnRequestComplete<JSONObject>() {
@@ -122,7 +120,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		JSONObject parameters = new JSONObject();
 		parameters.put("message", "hello");
 		restClient.post("ping", parameters, new OnRequestComplete<JSONObject>() {
@@ -143,13 +141,13 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		final CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		JSONObject parameters = new JSONObject();
 		parameters.put("data", "croquis");
 		restClient.post("setData", parameters, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
-				restClient.setBaseUrl(TEST_BASE_URL);
+				restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 				restClient.get("getData", null, new OnRequestComplete<JSONObject>() {
 					@Override
 					public void onComplete(RestError error, JSONObject result) {
@@ -170,7 +168,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		final CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		JSONObject parameters = new JSONObject();
 		parameters.put("message", "hello");
 		restClient.postGzip("ping", parameters, new OnRequestComplete<JSONObject>() {
@@ -191,7 +189,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		final CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 
 		JSONObject parameters = new JSONObjectBuilder()
 				.add("a", "message")
@@ -240,7 +238,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(3);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		subTestError(restClient, countDownLatch,
 				new JSONObjectBuilder().add("error", "MyError").build(),
 				new RestError(400, "MyError", null));
@@ -272,7 +270,7 @@ public class CraryRestClientTest extends AndroidTestCase {
 		final CountDownLatch countDownLatch = new CountDownLatch(2);
 
 		CraryRestClient restClient = CraryRestClient.sharedClient(getContext());
-		restClient.setBaseUrl(TEST_BASE_URL);
+		restClient.setBaseUrl(TestConfig.TEST_BASE_URL);
 		restClient.get("plain", null, new OnRequestComplete<JSONObject>() {
 			@Override
 			public void onComplete(RestError error, JSONObject result) {
