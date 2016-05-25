@@ -426,12 +426,16 @@ public class CraryRestClientImplApache {
         if (cookieHeaders == null || cookieHeaders.length == 0) {
             return null;
         }
-        String cookieValue = cookieHeaders[0].getValue();
-        int startPos = cookieValue.indexOf(cookieKey) + cookieKey.length() + 1;
-        int lastPos = cookieValue.indexOf(";", startPos) + 1;
-        if (startPos == -1) {
-            return null;
+        cookieKey += "=";
+        for (Header cookieHeader : cookieHeaders) {
+            String cookieValue = cookieHeader.getValue();
+            int startPos = cookieValue.indexOf(cookieKey);
+            if (startPos >= 0) {
+                startPos += cookieKey.length();
+                int lastPos = cookieValue.indexOf(";", startPos) + 1;
+                return cookieValue.substring(startPos, lastPos);
+            }
         }
-        return cookieValue.substring(startPos, lastPos);
+        return null;
     }
 }
