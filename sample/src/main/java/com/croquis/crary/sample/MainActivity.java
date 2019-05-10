@@ -7,11 +7,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.croquis.crary.app.CraryActionBarActivity;
-
 import java.util.ArrayList;
-
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
@@ -35,7 +32,7 @@ public class MainActivity extends CraryActionBarActivity {
 		titleList.add("Open Browser");
 		titleList.add("Reactive Error");
 
-		ListView listView = (ListView) findViewById(R.id.listView);
+		ListView listView = findViewById(R.id.listView);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titleList);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -1,16 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 20
-    buildToolsVersion "20.0.0"
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.croquis.crary.sample"
-        minSdkVersion 8
-        targetSdkVersion 20
+        minSdkVersion 15
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -22,7 +22,8 @@ android {
 println "$rootDir/deploy/snashots"
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(":crary")
-    compile 'com.android.support:appcompat-v7:20.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(":crary")
+    implementation 'io.reactivex:rxjava:1.0.+'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
 }

@@ -1,14 +1,13 @@
 package com.croquis.crary.app;
 
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
-public class CraryActionBarActivity extends ActionBarActivity {
+public class CraryActionBarActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
