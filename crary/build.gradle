@@ -1,5 +1,5 @@
-ext.VERSION_NAME="0.3.0"
-ext.VERSION_CODE="00030000"
+ext.VERSION_NAME="0.4.0"
+ext.VERSION_CODE="00040000"
 ext.GROUP="com.croquis.crary"
 
 ext.POM_DESCRIPTION="Croquis's common libraries for Android"
