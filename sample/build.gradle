@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "com.croquis.crary.sample"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -24,6 +24,6 @@ println "$rootDir/deploy/snashots"
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(":crary")
-    implementation 'io.reactivex:rxjava:1.0.+'
+    implementation "io.reactivex.rxjava2:rxjava:2.2.8"
     implementation 'com.android.support:appcompat-v7:27.1.1'
 }

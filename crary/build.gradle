@@ -1,5 +1,5 @@
-ext.VERSION_NAME="0.4.0"
-ext.VERSION_CODE="00040000"
+ext.VERSION_NAME="0.5.0"
+ext.VERSION_CODE="00050000"
 ext.GROUP="com.croquis.crary"
 
 ext.POM_DESCRIPTION="Croquis's common libraries for Android"
@@ -26,11 +26,11 @@ apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn
 
 
 android {
-    compileSdkVersion 27
+        compileSdkVersion 27
 
     defaultConfig {
         // This should be 14, but is 7 because extra-abc/extra-abs depend on this library
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 27
     }
 
@@ -45,9 +45,9 @@ android {
 
 dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.google.code.gson:gson:2.8.4'
-    implementation 'com.squareup.mimecraft:mimecraft:1.1.+'
-    implementation 'io.reactivex:rxjava:1.0.+'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.mimecraft:mimecraft:1.1.1'
+    implementation "io.reactivex.rxjava2:rxjava:2.2.8"
     implementation('org.apache.httpcomponents:httpmime:4.2.6') {
         exclude module: 'httpcore'
     }

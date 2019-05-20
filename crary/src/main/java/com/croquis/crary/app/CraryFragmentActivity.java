@@ -3,10 +3,10 @@ package com.croquis.crary.app;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.functions.Action1;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 public class CraryFragmentActivity extends FragmentActivity {
     @Override
@@ -21,26 +21,27 @@ public class CraryFragmentActivity extends FragmentActivity {
         ((CraryApplication) getApplication()).activityStopped(this);
     }
 
-    private CompositeSubscription mSubscriptions = new CompositeSubscription();
+    private CompositeDisposable mDisposable = new CompositeDisposable();
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSubscriptions.unsubscribe();
+        mDisposable.clear();
     }
 
-    protected <T> Subscription subscribe(Observable<T> observable, Action1<? super T> onNext) {
-        Subscription subscription = observable.subscribe(onNext, new Action1<Throwable>() {
+    protected <T> Disposable subscribe(Observable<T> observable, Consumer<? super T> onNext) {
+        Disposable disposable = observable.subscribe(onNext, new Consumer<Throwable>() {
             @Override
-            public void call(Throwable throwable) {
+            public void accept(Throwable throwable) throws Exception {
                 Log.e("Crary", "Reactive Error", throwable);
             }
         });
-        mSubscriptions.add(subscription);
-        return subscription;
+
+        mDisposable.add(disposable);
+        return disposable;
     }
 
-    protected void unsubscribe(Subscription subscription) {
-        mSubscriptions.remove(subscription);
+    protected void unsubscribe(Disposable disposable) {
+        mDisposable.delete(disposable);
     }
 }

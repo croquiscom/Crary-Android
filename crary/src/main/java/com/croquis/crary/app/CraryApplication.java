@@ -3,7 +3,8 @@ package com.croquis.crary.app;
 import android.app.Activity;
 import android.app.Application;
 
-import rx.subjects.PublishSubject;
+import io.reactivex.subjects.PublishSubject;
+
 
 /**
  * The base Application class for Croquis Apps.

@@ -9,8 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.croquis.crary.app.CraryActionBarActivity;
 import java.util.ArrayList;
-import rx.functions.Action1;
-import rx.subjects.PublishSubject;
+
+import io.reactivex.functions.Consumer;
+import io.reactivex.subjects.PublishSubject;
+
 
 public class MainActivity extends CraryActionBarActivity {
 	PublishSubject<Void> mReactiveError = PublishSubject.create();
@@ -20,9 +22,9 @@ public class MainActivity extends CraryActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		subscribe(mReactiveError, new Action1<Void>() {
+		subscribe(mReactiveError, new Consumer<Void>() {
 			@Override
-			public void call(Void aVoid) {
+			public void accept(Void aVoid) throws Exception {
 				throw new RuntimeException("Error while handling event");
 			}
 		});
